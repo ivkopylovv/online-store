@@ -2,6 +2,8 @@ package com.onlinestore.onlinestore.controller;
 
 import com.onlinestore.onlinestore.entity.UserEntity;
 import com.onlinestore.onlinestore.exception.UserAlreadyExistException;
+import com.onlinestore.onlinestore.exception.UserLoginPasswordIncorrectException;
+import com.onlinestore.onlinestore.exception.UserNotFoundException;
 import com.onlinestore.onlinestore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +28,26 @@ public class UserController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity getUsers() {
+    @GetMapping(params = {"login", "password"})
+    public ResponseEntity authorization(@RequestParam String login,@RequestParam String password) {
         try {
-            return ResponseEntity.ok("Server is working");
+            return ResponseEntity.ok(userService.authorization(login, password));
+        } catch (UserLoginPasswordIncorrectException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Server is fault");
         }
     }
+
+    @GetMapping(params = {"id"})
+    public ResponseEntity getUser(@RequestParam Long id) {
+        try {
+            return ResponseEntity.ok(userService.getUser(id));
+        } catch (UserNotFoundException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Server is fault");
+        }
+    }
+
 }

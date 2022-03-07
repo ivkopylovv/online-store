@@ -6,4 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface UserRepository extends CrudRepository <UserEntity, Long> {
     UserEntity findByName(String name);
     UserEntity findByLogin(String login);
+    UserEntity findByPassword(String password);
 }

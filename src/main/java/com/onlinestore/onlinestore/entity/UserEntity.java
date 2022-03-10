@@ -14,6 +14,7 @@ public class UserEntity {
     private String name;
     private String login;
     private String password;
+    private String role;
 
     public UserEntity() {
     }
@@ -48,5 +49,13 @@ public class UserEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

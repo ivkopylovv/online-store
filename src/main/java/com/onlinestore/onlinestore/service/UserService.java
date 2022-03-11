@@ -8,6 +8,9 @@ import com.onlinestore.onlinestore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 @Service
 public class UserService {
 
@@ -41,5 +44,12 @@ public class UserService {
         return user.getId() + "&" + user.getLogin() + "&" + user.getName();
     }
 
+    public void newCookie(HttpServletResponse response, String login) {
+        Cookie cookie = new Cookie(login, createToken(login));
+        cookie.setHttpOnly(false);
+        cookie.setSecure(false);
+        cookie.setMaxAge(60 * 60);
+        response.addCookie(cookie);
+    }
 }
 

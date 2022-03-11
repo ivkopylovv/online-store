@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Micla ###
+/src/main/resources/application.properties

@@ -48,7 +48,8 @@ public class UserService {
         Cookie cookie = new Cookie(login, createToken(login));
         cookie.setHttpOnly(false);
         cookie.setSecure(false);
-        cookie.setMaxAge(60 * 60);
+        cookie.setPath("/");
+        cookie.setMaxAge(86400);
         response.addCookie(cookie);
     }
 }

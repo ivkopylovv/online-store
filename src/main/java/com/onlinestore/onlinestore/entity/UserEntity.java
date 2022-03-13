@@ -1,9 +1,8 @@
 package com.onlinestore.onlinestore.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.onlinestore.onlinestore.constants.UserRole;
+
+import javax.persistence.*;
 
 @Entity
 public class UserEntity {
@@ -16,9 +15,18 @@ public class UserEntity {
     private String password;
     private String role;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    private TokenEntity token;
+
     public UserEntity() {
     }
 
+    public UserEntity(String name, String login, String password) {
+        this.name = name;
+        this.login = login;
+        this.password = password;
+        this.role = UserRole.USER;
+    }
     public Long getId() {
         return id;
     }
@@ -57,5 +65,9 @@ public class UserEntity {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public void setToken(TokenEntity token) {
+        this.token = token;
     }
 }

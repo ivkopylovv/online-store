@@ -1,21 +1,19 @@
-package com.onlinestore.onlinestore.model;
+package com.onlinestore.onlinestore.dto.response;
 
 import com.onlinestore.onlinestore.entity.UserEntity;
 
-public class User {
+public class UserDto {
     private Long id;
     private String role;
     private String name;
 
-    public User() {
+    public UserDto() {
     }
 
-    public static User toModel(UserEntity user) {
-        User model = new User();
-        model.setId((user.getId()));
-        model.setName(user.getName());
-        model.setRole(user.getRole());
-        return model;
+    public UserDto(UserEntity user) {
+        this.id = user.getId();
+        this.name = user.getName();
+        this.role = user.getRole();
     }
 
     public Long getId() {

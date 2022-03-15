@@ -1,6 +1,7 @@
 package com.onlinestore.onlinestore.entity;
 
 import com.onlinestore.onlinestore.constants.UserRole;
+import com.onlinestore.onlinestore.dto.request.UserRegistrationDto;
 
 import javax.persistence.*;
 
@@ -27,6 +28,7 @@ public class UserEntity {
         this.password = password;
         this.role = UserRole.USER;
     }
+
     public Long getId() {
         return id;
     }

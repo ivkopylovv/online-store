@@ -5,6 +5,10 @@ public class UserRegistrationDto {
     private String login;
     private String password;
 
+    public UserRegistrationDto() {
+
+    }
+
     public String getName() {
         return name;
     }

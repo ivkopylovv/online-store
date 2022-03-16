@@ -80,12 +80,20 @@ public class ProductController {
         }
     }
 
-    @GetMapping(params = {"start", "end"})
-    public ResponseEntity getArrayProduct(@RequestParam long start, @RequestParam long end) {
+    @GetMapping(params = {"page"})
+    public ResponseEntity getPageProducts(@RequestParam int page) {
         try {
-            return ResponseEntity.ok().body(productService.getProductsBetweenId1Id2(start, end));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Fault");
+            return new ResponseEntity(
+                    productService.getPageProducts(page),
+                    HttpStatus.OK
+            );
+        }catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 

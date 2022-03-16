@@ -1,53 +1,112 @@
 package com.onlinestore.onlinestore.controller;
 
-import com.onlinestore.onlinestore.entity.UserEntity;
+import com.onlinestore.onlinestore.constants.ErrorMessage;
+import com.onlinestore.onlinestore.constants.SuccessMessage;
+import com.onlinestore.onlinestore.dto.request.UserLoginDto;
+import com.onlinestore.onlinestore.dto.request.UserRegistrationDto;
+import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
+import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
+import com.onlinestore.onlinestore.dto.response.UserDto;
+import com.onlinestore.onlinestore.exception.InvalidTokenException;
 import com.onlinestore.onlinestore.exception.UserAlreadyExistException;
 import com.onlinestore.onlinestore.exception.UserLoginPasswordIncorrectException;
-import com.onlinestore.onlinestore.exception.UserNotFoundException;
+import com.onlinestore.onlinestore.service.TokenService;
 import com.onlinestore.onlinestore.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.onlinestore.onlinestore.utility.CookieUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private final UserService userService;
+    private final TokenService tokenService;
 
-    @Autowired
-    private UserService userService;
+    UserController(UserService userService, TokenService tokenService) {
+        this.userService = userService;
+        this.tokenService = tokenService;
+    }
 
+    @RequestMapping("/registration")
     @PostMapping
-    public ResponseEntity registration(@RequestBody UserEntity user) {
+    public ResponseEntity registration(@RequestBody UserRegistrationDto user) {
         try {
-            userService.registration(user);
-            return ResponseEntity.ok("User added");
+            userService.registerUser(user);
+
+            return new ResponseEntity(
+                    new SuccessMessageDto(SuccessMessage.USER_ADDED),
+                    HttpStatus.OK
+            );
         } catch (UserAlreadyExistException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Fault");
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.USER_EXISTS),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
-    @GetMapping(params = {"login", "password"})
-    public ResponseEntity authorization(@RequestParam String login,@RequestParam String password) {
+    @RequestMapping("/login")
+    @PostMapping()
+    public ResponseEntity authorization(@RequestBody UserLoginDto userLoginDto, HttpServletResponse response) throws UserLoginPasswordIncorrectException {
         try {
-            return ResponseEntity.ok(userService.authorization(login, password));
+            UserDto userDto = userService.authorizeUser(userLoginDto);
+            String token = tokenService.getTokenByUser(userDto);
+            Cookie cookie = CookieUtils.getCookie("token", token);
+
+            response.addCookie(cookie);
+
+            return new ResponseEntity(userDto, HttpStatus.OK);
         } catch (UserLoginPasswordIncorrectException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Server is fault");
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.LOGIN_OR_PASSWORD_INCORRECT),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
-    @GetMapping(params = {"id"})
-    public ResponseEntity getUser(@RequestParam Long id) {
+    @RequestMapping("/userInfo")
+    @GetMapping
+    public ResponseEntity userInfo(@CookieValue("token") String token) {
         try {
-            return ResponseEntity.ok(userService.getUser(id));
-        } catch (UserNotFoundException e) {
-                return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Server is fault");
+            UserDto userDto = userService.getUserInfo(token);
+
+            return new ResponseEntity(userDto, HttpStatus.OK);
+        } catch (InvalidTokenException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.UNAUTHORIZED),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
-
 }

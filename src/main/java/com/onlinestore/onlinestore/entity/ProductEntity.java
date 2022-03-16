@@ -8,6 +8,16 @@ import java.math.BigDecimal;
 
 @Entity
 public class ProductEntity {
+    public ProductEntity() {
+    }
+
+    public ProductEntity(Long id, String name, String description, BigDecimal price) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

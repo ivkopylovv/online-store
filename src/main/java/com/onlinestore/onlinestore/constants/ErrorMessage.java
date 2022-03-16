@@ -5,4 +5,7 @@ public class ErrorMessage {
     public static final String INTERNAL_SERVER_ERROR = "Internal server error";
     public static final String LOGIN_OR_PASSWORD_INCORRECT = "Login or password are incorrect";
     public static final String UNAUTHORIZED = "Unauthorized";
+
+    public static final String PRODUCT_ALREADY_EXIST = "Product already exist";
+    public static final String PRODUCT_NOT_FOUND = "Product not found";
 }

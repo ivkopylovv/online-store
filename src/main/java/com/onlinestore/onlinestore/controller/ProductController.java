@@ -57,6 +57,12 @@ public class ProductController {
                     new SuccessMessageDto(SuccessMessage.PRODUCT_UPDATED),
                     HttpStatus.OK
             );
+        } catch (ProductAlreadyExistException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.PRODUCT_WITH_NAME_ALREADY_EXIST),
+                    HttpStatus.BAD_REQUEST);
         } catch (RuntimeException e) {
             e.printStackTrace();
 
@@ -66,7 +72,7 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping(value = "/deleted",params = {"id"})
+    @DeleteMapping(value = "/deleted", params = {"id"})
     public ResponseEntity deleteProduct(@RequestParam long id) {
         try {
             productService.deleteProduct(id);

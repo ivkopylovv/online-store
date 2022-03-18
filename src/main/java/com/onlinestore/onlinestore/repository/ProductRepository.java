@@ -17,9 +17,9 @@ public interface ProductRepository extends CrudRepository<ProductEntity, Long> {
 
     List<ProductEntity> findByOrderById(Pageable pageable);
 
-    List<ProductEntity> getByNameIsContaining(String name, Pageable pageable);
+    List<ProductEntity> getByNameStartingWith(String name, Pageable pageable);
 
-    long countByNameIsContaining(String name);
+    long countByNameStartingWith(String name);
 
     @Transactional
     @Modifying

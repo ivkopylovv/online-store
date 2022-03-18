@@ -76,12 +76,12 @@ public class ProductService {
     ) {
         List<ProductEntity> productsEntity = new ArrayList<ProductEntity>();
         if (asc) {
-            productsEntity = productRepository.getByNameIsContaining(
+            productsEntity = productRepository.getByNameStartingWith(
                     name,
                     PageRequest.of(page, Product.countPage, Sort.by(parameter).ascending())
             );
         } else {
-            productsEntity = productRepository.getByNameIsContaining(
+            productsEntity = productRepository.getByNameStartingWith(
                     name,
                     PageRequest.of(page, Product.countPage, Sort.by(parameter).descending())
             );
@@ -100,10 +100,13 @@ public class ProductService {
     }
 
     public long getCountPagesProductsLikeName(String name) {
-        return productRepository.countByNameIsContaining(name) / Product.countPage;
+        return productRepository.countByNameStartingWith(name) / Product.countPage;
     }
 
-    public void updateProductById(ProductAllFieldsDto product){
+    public void updateProductById(ProductAllFieldsDto product) throws ProductAlreadyExistException{
+        if (productRepository.findByName(product.getName()) != null){
+            throw new ProductAlreadyExistException(ErrorMessage.PRODUCT_WITH_NAME_ALREADY_EXIST);
+        }
         productRepository.updateNameAndDescriptionAndPriceById(
                 product.getName(),
                 product.getDescription(),

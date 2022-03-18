@@ -2,13 +2,12 @@ package com.onlinestore.onlinestore.service;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.TokenOption;
+import com.onlinestore.onlinestore.dto.request.UserLogoutDto;
 import com.onlinestore.onlinestore.dto.request.UserLoginDto;
 import com.onlinestore.onlinestore.dto.request.UserRegistrationDto;
 import com.onlinestore.onlinestore.entity.TokenEntity;
 import com.onlinestore.onlinestore.entity.UserEntity;
-import com.onlinestore.onlinestore.exception.InvalidTokenException;
-import com.onlinestore.onlinestore.exception.UserAlreadyExistException;
-import com.onlinestore.onlinestore.exception.UserLoginPasswordIncorrectException;
+import com.onlinestore.onlinestore.exception.*;
 import com.onlinestore.onlinestore.dto.response.UserDto;
 import com.onlinestore.onlinestore.repository.TokenRepository;
 import com.onlinestore.onlinestore.repository.UserRepository;
@@ -73,6 +72,24 @@ public class UserService {
         UserEntity user = userRepository.findByTokenId(tokenEntity.getId());
 
         return new UserDto(user);
+    }
+
+    public void logoutUser(UserLogoutDto userLogoutDto) {
+        UserEntity user = userRepository.findById(userLogoutDto.getId()).get();
+
+        if (user == null) {
+            throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND);
+        }
+
+        TokenEntity token = tokenRepository.findByUserId(userLogoutDto.getId());
+
+        if (token == null) {
+            throw new TokenNotFoundException(ErrorMessage.TOKEN_NOT_FOUND);
+        }
+
+        user.setToken(null);
+        userRepository.save(user);
+        tokenRepository.delete(token);
     }
 }
 

@@ -1,8 +1,8 @@
 package com.onlinestore.onlinestore.dto.request;
 
 public class UserLoginDto {
-    String login;
-    String password;
+    private String login;
+    private String password;
 
     public UserLoginDto(String login, String password) {
         this.login = login;

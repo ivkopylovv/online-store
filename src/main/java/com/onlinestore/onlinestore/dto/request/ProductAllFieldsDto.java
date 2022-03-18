@@ -2,13 +2,13 @@ package com.onlinestore.onlinestore.dto.request;
 
 import java.math.BigDecimal;
 
-public class ProductCreateDto {
+public class ProductAllFieldsDto {
     private Long id;
     private String name;
     private String description;
     private BigDecimal price;
 
-    public ProductCreateDto(Long id, String name, String description, BigDecimal price) {
+    public ProductAllFieldsDto(Long id, String name, String description, BigDecimal price) {
         this.id = id;
         this.name = name;
         this.description = description;

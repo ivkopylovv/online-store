@@ -2,7 +2,7 @@ package com.onlinestore.onlinestore.controller;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.SuccessMessage;
-import com.onlinestore.onlinestore.dto.request.ProductCreateDto;
+import com.onlinestore.onlinestore.dto.request.ProductAllFieldsDto;
 import com.onlinestore.onlinestore.dto.response.CountDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
@@ -24,8 +24,8 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping
-    public ResponseEntity addProduct(@RequestBody ProductCreateDto product) {
+    @PostMapping(value = "/created")
+    public ResponseEntity addProduct(@RequestBody ProductAllFieldsDto product) {
         try {
             productService.addProduct(product);
 
@@ -45,6 +45,51 @@ public class ProductController {
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
                     HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping(value = "/updated")
+    public ResponseEntity updateProduct(@RequestBody ProductAllFieldsDto product) {
+        try {
+            productService.updateProductById(product);
+
+            return new ResponseEntity(
+                    new SuccessMessageDto(SuccessMessage.PRODUCT_UPDATED),
+                    HttpStatus.OK
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(value = "/deleted",params = {"id"})
+    public ResponseEntity deleteProduct(@RequestParam long id) {
+        try {
+            productService.deleteProduct(id);
+
+            return new ResponseEntity(
+                    new SuccessMessageDto(SuccessMessage.PRODUCT_DELETED),
+                    HttpStatus.OK
+            );
+
+        } catch (ProductNotFoundException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -78,7 +123,64 @@ public class ProductController {
                     productService.getPageProducts(page),
                     HttpStatus.OK
             );
-        }catch (RuntimeException e) {
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+
+    @GetMapping(params = {"name", "page"})
+    public ResponseEntity getSearchProductsPage(@RequestParam String name, @RequestParam int page) {
+        try {
+            return new ResponseEntity(
+                    productService.searchProductsByNameSortingByParameter(name, page, true, "name"),
+                    HttpStatus.OK
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping(params = {"name", "page", "asc"})
+    public ResponseEntity getSearchProductsPage(@RequestParam String name,
+                                                @RequestParam int page,
+                                                @RequestParam Boolean asc) {
+        try {
+            return new ResponseEntity(
+                    productService.searchProductsByNameSortingByParameter(name, page, asc, "name"),
+                    HttpStatus.OK
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping(params = {"name", "page", "asc", "sorting"})
+    public ResponseEntity getSearchProductsPage(@RequestParam String name,
+                                                @RequestParam int page,
+                                                @RequestParam Boolean asc,
+                                                @RequestParam String sorting) {
+        try {
+            return new ResponseEntity(
+                    productService.searchProductsByNameSortingByParameter(name, page, asc, sorting),
+                    HttpStatus.OK
+            );
+        } catch (RuntimeException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
@@ -89,11 +191,11 @@ public class ProductController {
     }
 
     @GetMapping
-    @RequestMapping("/count")
+    @RequestMapping(value = "/count-page")
     public ResponseEntity getCountProducts() {
         try {
             return new ResponseEntity(
-                    new CountDto(productService.getCountProducts()),
+                    new CountDto(productService.getCountPagesProductsLikeName()),
                     HttpStatus.OK
             );
         } catch (RuntimeException e) {
@@ -106,22 +208,12 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping(params = {"id"})
-    public ResponseEntity deleteProduct(@RequestParam long id) {
+    @GetMapping(value = "/count-page", params = {"name"})
+    public ResponseEntity getCountProducts(@RequestParam String name) {
         try {
-            productService.deleteProduct(id);
-
             return new ResponseEntity(
-                    new SuccessMessageDto(SuccessMessage.PRODUCT_DELETED),
+                    new CountDto(productService.getCountPagesProductsLikeName(name)),
                     HttpStatus.OK
-            );
-
-        } catch (ProductNotFoundException e) {
-            e.printStackTrace();
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
-                    HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -132,5 +224,7 @@ public class ProductController {
             );
         }
     }
+
+
 }
 

@@ -11,5 +11,6 @@ import java.util.ArrayList;
 @Repository
 public interface BasketRepository extends CrudRepository<BasketEntity, Long> {
     boolean existsByBasketId(BasketId basketId);
+
     ArrayList<BasketEntity> findBasketEntityByBasketIdUserId(Long id);
 }

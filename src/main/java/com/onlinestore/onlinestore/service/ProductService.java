@@ -1,7 +1,7 @@
 package com.onlinestore.onlinestore.service;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
-import com.onlinestore.onlinestore.constants.Product;
+import com.onlinestore.onlinestore.constants.ProductOption;
 import com.onlinestore.onlinestore.dto.request.ProductAllFieldsDto;
 import com.onlinestore.onlinestore.dto.response.ProductDto;
 import com.onlinestore.onlinestore.dto.response.ProductNameIdPriceDto;
@@ -57,7 +57,7 @@ public class ProductService {
     }
 
     public List<ProductNameIdPriceDto> getPageProducts(int page) {
-        List<ProductEntity> productsEntity = productRepository.findByOrderById(PageRequest.of(page, Product.countPage));
+        List<ProductEntity> productsEntity = productRepository.findByOrderById(PageRequest.of(page, ProductOption.countPage));
 
         List<ProductNameIdPriceDto> productsDto = new ArrayList<ProductNameIdPriceDto>();
 
@@ -78,12 +78,12 @@ public class ProductService {
         if (asc) {
             productsEntity = productRepository.getByNameStartingWith(
                     name,
-                    PageRequest.of(page, Product.countPage, Sort.by(parameter).ascending())
+                    PageRequest.of(page, ProductOption.countPage, Sort.by(parameter).ascending())
             );
         } else {
             productsEntity = productRepository.getByNameStartingWith(
                     name,
-                    PageRequest.of(page, Product.countPage, Sort.by(parameter).descending())
+                    PageRequest.of(page, ProductOption.countPage, Sort.by(parameter).descending())
             );
         }
         List<ProductNameIdPriceDto> productsDto = new ArrayList<ProductNameIdPriceDto>();
@@ -96,11 +96,11 @@ public class ProductService {
 
 
     public long getCountPagesProductsLikeName() {
-        return productRepository.count() / Product.countPage;
+        return productRepository.count() / ProductOption.countPage;
     }
 
     public long getCountPagesProductsLikeName(String name) {
-        return productRepository.countByNameStartingWith(name) / Product.countPage;
+        return productRepository.countByNameStartingWith(name) / ProductOption.countPage;
     }
 
     public void updateProductById(ProductAllFieldsDto product) throws ProductAlreadyExistException{

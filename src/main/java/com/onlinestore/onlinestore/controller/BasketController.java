@@ -5,7 +5,7 @@ import com.onlinestore.onlinestore.constants.SuccessMessage;
 import com.onlinestore.onlinestore.dto.request.ProductAddToBasketDto;
 import com.onlinestore.onlinestore.dto.request.ProductDeleteFromBasketDto;
 import com.onlinestore.onlinestore.dto.request.UserBasketClearDto;
-import com.onlinestore.onlinestore.dto.request.UserIdDto;
+import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
 import com.onlinestore.onlinestore.exception.*;
@@ -70,11 +70,11 @@ public class BasketController {
 
     @RequestMapping("/get-products")
     @PostMapping
-    public ResponseEntity getAllProductsFromBasket(@RequestBody UserIdDto user) {
+    public ResponseEntity getPageOfProductsFromBasket(@RequestBody UserIdPageNumberDto user) {
         try {
 
             return new ResponseEntity(
-                    basketService.getAllProductsFromBasket(user),
+                    basketService.getPageOfProductsFromBasket(user),
                     HttpStatus.OK
             );
         } catch (BasketIsEmpty e) {

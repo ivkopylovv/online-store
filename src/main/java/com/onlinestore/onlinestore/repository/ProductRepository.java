@@ -25,5 +25,4 @@ public interface ProductRepository extends CrudRepository<ProductEntity, Long> {
     @Modifying
     @Query("update ProductEntity p set p.name = ?1, p.description = ?2, p.price = ?3 where p.id = ?4")
     void updateNameAndDescriptionAndPriceById(String name, String description, BigDecimal price, Long id);
-
 }

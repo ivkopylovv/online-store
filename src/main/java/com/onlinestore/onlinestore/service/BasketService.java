@@ -1,17 +1,20 @@
 package com.onlinestore.onlinestore.service;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
+import com.onlinestore.onlinestore.constants.ProductOption;
 import com.onlinestore.onlinestore.dto.request.ProductAddToBasketDto;
 import com.onlinestore.onlinestore.dto.request.ProductDeleteFromBasketDto;
 import com.onlinestore.onlinestore.dto.request.UserBasketClearDto;
-import com.onlinestore.onlinestore.dto.request.UserIdDto;
-import com.onlinestore.onlinestore.dto.response.ProductIdDto;
+import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
+import com.onlinestore.onlinestore.dto.response.ProductNameIdPriceDto;
+import com.onlinestore.onlinestore.entity.ProductEntity;
 import com.onlinestore.onlinestore.utility.embeddable.BasketId;
 import com.onlinestore.onlinestore.entity.BasketEntity;
 import com.onlinestore.onlinestore.exception.*;
 import com.onlinestore.onlinestore.repository.BasketRepository;
 import com.onlinestore.onlinestore.repository.ProductRepository;
 import com.onlinestore.onlinestore.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -47,16 +50,20 @@ public class BasketService {
         return basketRepository.save(basket);
     }
 
-    public ArrayList<ProductIdDto> getAllProductsFromBasket(UserIdDto userIdDto) {
-        ArrayList<BasketEntity> basketEntities = basketRepository.findBasketEntityByBasketIdUserId(userIdDto.getUserId());
+    public ArrayList<ProductNameIdPriceDto> getPageOfProductsFromBasket(UserIdPageNumberDto user) {
+        ArrayList<BasketEntity> basketEntities = basketRepository.
+                findAllByBasketIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.countPage));
         if (basketEntities.isEmpty()) {
             throw new BasketIsEmpty(ErrorMessage.BASKET_IS_EMPTY);
         }
 
-        ArrayList <ProductIdDto> products = new ArrayList<ProductIdDto>();
+        ArrayList <ProductNameIdPriceDto> products = new ArrayList<>();
 
         for (BasketEntity basketEntity: basketEntities) {
-            products.add(new ProductIdDto(basketEntity.getBasketId().getProductId()));
+            ProductEntity productEntity = productRepository.
+                    findById(basketEntity.getBasketId().getProductId()).get();
+            products.add(new ProductNameIdPriceDto(productEntity.getId(),
+                    productEntity.getName(), productEntity.getPrice()));
         }
 
         return products;

@@ -1,7 +1,7 @@
 package com.onlinestore.onlinestore.dto.response;
 
 public class CountDto {
-    private long count;
+    private Long count;
 
     public long getCount() {
         return count;

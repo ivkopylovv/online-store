@@ -1,10 +1,8 @@
 package com.onlinestore.onlinestore.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 public class ProductEntity {
@@ -13,13 +11,19 @@ public class ProductEntity {
     private Long id;
     private String name;
     private String description;
+    private String image;
     private BigDecimal price;
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductImagesEntity> productImagesEntities;
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductTagsEntity> productTagsEntities;
 
     public ProductEntity() {
     }
 
-    public ProductEntity(Long id, String name, String description, BigDecimal price) {
-        this.id = id;
+    public ProductEntity(String name, String description, BigDecimal price) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -41,6 +45,13 @@ public class ProductEntity {
         return price;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 
     public void setName(String name) {
         this.name = name;

@@ -1,8 +1,8 @@
 package com.onlinestore.onlinestore.dto.request;
 
 public class UserIdPageNumberDto {
-    Long userId;
-    int pageNumber;
+    private Long userId;
+    private int pageNumber;
 
     public UserIdPageNumberDto() {
     }

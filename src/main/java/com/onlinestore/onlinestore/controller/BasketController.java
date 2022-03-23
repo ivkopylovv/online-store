@@ -6,6 +6,7 @@ import com.onlinestore.onlinestore.dto.request.ProductAddToBasketDto;
 import com.onlinestore.onlinestore.dto.request.ProductDeleteFromBasketDto;
 import com.onlinestore.onlinestore.dto.request.UserBasketClearDto;
 import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
+import com.onlinestore.onlinestore.dto.response.CountDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
 import com.onlinestore.onlinestore.exception.*;
@@ -26,14 +27,13 @@ public class BasketController {
         this.basketService = basketService;
     }
 
-    @RequestMapping("/addition")
-    @PostMapping
+    @PostMapping(value = "/addition")
     public ResponseEntity addProductInBasket(@RequestBody ProductAddToBasketDto productAddToBasketDto) {
         try {
-            basketService.addProductToBasket(productAddToBasketDto);
+            Long count = basketService.addProductToBasket(productAddToBasketDto);
 
             return new ResponseEntity(
-                    new SuccessMessageDto(SuccessMessage.PRODUCT_ADDED),
+                    new CountDto(count),
                     HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
@@ -68,8 +68,7 @@ public class BasketController {
         }
     }
 
-    @RequestMapping("/get-products")
-    @PostMapping
+    @PostMapping(value = "/get-products")
     public ResponseEntity getPageOfProductsFromBasket(@RequestBody UserIdPageNumberDto user) {
         try {
 
@@ -94,14 +93,13 @@ public class BasketController {
         }
     }
 
-    @RequestMapping("/delete-product")
-    @PostMapping
+    @PostMapping(value = "/delete-product")
     public ResponseEntity deleteProductFromBasket(@RequestBody ProductDeleteFromBasketDto productDeleteFromBasketDto) {
         try {
-            basketService.deleteProductFromBasket(productDeleteFromBasketDto);
+            Long count = basketService.deleteProductFromBasket(productDeleteFromBasketDto);
 
             return new ResponseEntity(
-                    new SuccessMessageDto(SuccessMessage.PRODUCT_DELETED),
+                    new CountDto(count),
                     HttpStatus.OK
             );
         } catch (ProductNotInBasket e) {
@@ -121,8 +119,7 @@ public class BasketController {
         }
     }
 
-    @RequestMapping("/clear-basket")
-    @PostMapping
+    @PostMapping(value = "/clear-basket")
     public ResponseEntity clearBasket(@RequestBody UserBasketClearDto userBasketClearDto) {
         try {
             basketService.clearBasket(userBasketClearDto);

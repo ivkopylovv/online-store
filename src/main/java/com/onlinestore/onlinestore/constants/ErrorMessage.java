@@ -15,4 +15,6 @@ public class ErrorMessage {
     public static final String PRODUCT_ALREADY_EXIST = "Product already exist";
     public static final String PRODUCT_NOT_FOUND = "Product not found";
     public static final String PRODUCT_WITH_NAME_ALREADY_EXIST = "Product with that name already exists";
+    public static final String PRODUCT_IMAGES_NOT_FOUND = "Product images not found";
+    public static final String PRODUCT_TAGS_NOT_FOUND = "Product tags not found";
 }

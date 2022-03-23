@@ -1,6 +1,6 @@
 package com.onlinestore.onlinestore.entity;
 
-import com.onlinestore.onlinestore.utility.embeddable.BasketId;
+import com.onlinestore.onlinestore.embeddable.BasketId;
 
 import javax.persistence.*;
 

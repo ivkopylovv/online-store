@@ -30,8 +30,7 @@ public class UserController {
         this.tokenService = tokenService;
     }
 
-    @RequestMapping("/registration")
-    @PostMapping
+    @PostMapping(value = "/registration")
     public ResponseEntity registration(@RequestBody UserRegistrationDto user) {
         try {
             userService.registerUser(user);
@@ -57,8 +56,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping("/login")
-    @PostMapping()
+    @PostMapping(value = "/login")
     public ResponseEntity authorization(@RequestBody UserLoginDto userLoginDto, HttpServletResponse response) throws UserLoginPasswordIncorrectException {
         try {
             UserDto userDto = userService.authorizeUser(userLoginDto);
@@ -85,8 +83,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping("/user-info")
-    @GetMapping
+    @GetMapping(value = "/user-info")
     public ResponseEntity userInfo(@CookieValue("token") String token) {
         try {
             UserDto userDto = userService.getUserInfo(token);
@@ -109,8 +106,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping("/logout")
-    @PostMapping
+    @PostMapping(value = "/logout")
     public ResponseEntity logout(@RequestBody UserLogoutDto user) {
         try {
             userService.logoutUser(user);

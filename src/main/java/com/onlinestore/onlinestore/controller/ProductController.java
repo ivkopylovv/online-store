@@ -7,7 +7,9 @@ import com.onlinestore.onlinestore.dto.response.CountDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
 import com.onlinestore.onlinestore.exception.ProductAlreadyExistException;
+import com.onlinestore.onlinestore.exception.ProductImagesNotFound;
 import com.onlinestore.onlinestore.exception.ProductNotFoundException;
+import com.onlinestore.onlinestore.exception.ProductTagsNotFound;
 import com.onlinestore.onlinestore.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping(value = "/created")
+    @PostMapping(value = "/add-product")
     public ResponseEntity addProduct(@RequestBody ProductAllFieldsDto product) {
         try {
             productService.addProduct(product);
@@ -48,7 +50,7 @@ public class ProductController {
         }
     }
 
-    @PatchMapping(value = "/updated")
+    @PatchMapping(value = "/update-product")
     public ResponseEntity updateProduct(@RequestBody ProductAllFieldsDto product) {
         try {
             productService.updateProductById(product);
@@ -72,8 +74,8 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping(value = "/deleted", params = {"id"})
-    public ResponseEntity deleteProduct(@RequestParam long id) {
+    @DeleteMapping(value = "/delete-product", params = {"id", "name"})
+    public ResponseEntity deleteProduct(@RequestParam long id, @RequestParam String name) {
         try {
             productService.deleteProduct(id);
 
@@ -99,9 +101,10 @@ public class ProductController {
         }
     }
 
-    @GetMapping(params = {"id"})
+    @GetMapping(value = "/get-product", params = {"id"})
     public ResponseEntity getProduct(@RequestParam long id) {
         try {
+
             return new ResponseEntity(
                     productService.getProduct(id),
                     HttpStatus.OK);
@@ -110,6 +113,20 @@ public class ProductController {
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (ProductImagesNotFound e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (ProductTagsNotFound e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.PRODUCT_TAGS_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -122,8 +139,8 @@ public class ProductController {
         }
     }
 
-    @GetMapping(params = {"page"})
-    public ResponseEntity getPageProducts(@RequestParam int page) {
+    @GetMapping(value = "/get-page", params = {"page"})
+    public ResponseEntity getProductsPage(@RequestParam int page) {
         try {
             return new ResponseEntity(
                     productService.getPageProducts(page),
@@ -140,7 +157,7 @@ public class ProductController {
     }
 
 
-    @GetMapping(params = {"name", "page"})
+    @GetMapping(value = "/get-page", params = {"name", "page"})
     public ResponseEntity getSearchProductsPage(@RequestParam String name, @RequestParam int page) {
         try {
             return new ResponseEntity(
@@ -157,7 +174,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping(params = {"name", "page", "asc"})
+    @GetMapping(value = "/get-page", params = {"name", "page", "asc"})
     public ResponseEntity getSearchProductsPage(@RequestParam String name,
                                                 @RequestParam int page,
                                                 @RequestParam Boolean asc) {
@@ -176,7 +193,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping(params = {"name", "page", "asc", "sorting"})
+    @GetMapping(value = "/get-page", params = {"name", "page", "asc", "sorting"})
     public ResponseEntity getSearchProductsPage(@RequestParam String name,
                                                 @RequestParam int page,
                                                 @RequestParam Boolean asc,
@@ -196,8 +213,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping
-    @RequestMapping(value = "/count-page")
+    @GetMapping(value = "/count-page")
     public ResponseEntity getCountProducts() {
         try {
             return new ResponseEntity(

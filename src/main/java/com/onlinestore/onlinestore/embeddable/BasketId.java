@@ -1,4 +1,4 @@
-package com.onlinestore.onlinestore.utility.embeddable;
+package com.onlinestore.onlinestore.embeddable;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;

@@ -90,6 +90,32 @@ public class FavouritesController {
         }
     }
 
+    @PostMapping(value = "/get-products-id")
+    public ResponseEntity getPageOfProductsIdFromFavourites(@RequestBody UserIdPageNumberDto user) {
+        try {
+
+            return new ResponseEntity(
+                    favouritesService.getPageOfProductsIdFromFavourites(user),
+                    HttpStatus.OK
+            );
+        } catch (FavouritesIsEmptyException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.FAVOURITES_IS_EMPTY),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+
     @PostMapping(value = "/delete-product")
     public ResponseEntity deleteProductFromFavourites(@RequestBody ProductDeleteFromFavouritesDto productDto) {
         try {

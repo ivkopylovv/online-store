@@ -3,6 +3,7 @@ package com.onlinestore.onlinestore.service;
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.ProductOption;
 import com.onlinestore.onlinestore.dto.request.*;
+import com.onlinestore.onlinestore.dto.response.ProductIdDto;
 import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
 import com.onlinestore.onlinestore.embeddable.FavouritesId;
 import com.onlinestore.onlinestore.entity.FavouritesEntity;
@@ -66,6 +67,25 @@ public class FavouritesService {
                     productEntity.getName(),
                     productEntity.getPrice(),
                     productEntity.getImage()));
+        }
+
+        return products;
+    }
+
+    public ArrayList<ProductIdDto> getPageOfProductsIdFromFavourites(UserIdPageNumberDto user) {
+        List<FavouritesEntity> favouritesEntities = favouritesRepository.
+                findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.countPage));
+
+        if (favouritesEntities.isEmpty()) {
+            throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
+        }
+
+        ArrayList <ProductIdDto> products = new ArrayList<>();
+
+        for (FavouritesEntity favouritesEntity: favouritesEntities) {
+            ProductEntity productEntity = productRepository.findById(
+                    favouritesEntity.getFavouritesId().getProductId()).get();
+            products.add(new ProductIdDto(productEntity.getId()));
         }
 
         return products;

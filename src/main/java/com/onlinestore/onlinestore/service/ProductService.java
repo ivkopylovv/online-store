@@ -44,6 +44,7 @@ public class ProductService {
         ProductEntity newProduct = new ProductEntity(
                 product.getName(),
                 product.getDescription(),
+                product.getImage(),
                 product.getPrice()
         );
 
@@ -108,7 +109,6 @@ public class ProductService {
         return productsDto;
     }
 
-
     public List<ProductInfoDto> searchProductsByNameSortingByParameter(
             String name,
             int page,
@@ -135,7 +135,6 @@ public class ProductService {
 
         return productsDto;
     }
-
 
     public long getCountPagesProductsLikeName() {
         return productRepository.count() / ProductOption.countPage;

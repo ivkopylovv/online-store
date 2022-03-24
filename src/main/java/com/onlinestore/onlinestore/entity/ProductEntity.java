@@ -23,9 +23,10 @@ public class ProductEntity {
     public ProductEntity() {
     }
 
-    public ProductEntity(String name, String description, BigDecimal price) {
+    public ProductEntity(String name, String description, String image, BigDecimal price) {
         this.name = name;
         this.description = description;
+        this.image = image;
         this.price = price;
     }
 

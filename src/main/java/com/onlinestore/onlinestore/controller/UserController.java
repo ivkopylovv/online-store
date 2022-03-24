@@ -89,7 +89,7 @@ public class UserController {
             UserDto userDto = userService.getUserInfo(token);
 
             return new ResponseEntity(userDto, HttpStatus.OK);
-        } catch (InvalidTokenException e) {
+        } catch (InvalidTokenExceptionException e) {
             e.printStackTrace();
 
             return new ResponseEntity(

@@ -2,15 +2,12 @@ package com.onlinestore.onlinestore.controller;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.SuccessMessage;
-import com.onlinestore.onlinestore.dto.request.ProductAddToBasketDto;
-import com.onlinestore.onlinestore.dto.request.ProductDeleteFromBasketDto;
-import com.onlinestore.onlinestore.dto.request.UserBasketClearDto;
-import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
+import com.onlinestore.onlinestore.dto.request.*;
 import com.onlinestore.onlinestore.dto.response.CountDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
 import com.onlinestore.onlinestore.exception.*;
-import com.onlinestore.onlinestore.service.BasketService;
+import com.onlinestore.onlinestore.service.FavouritesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,21 +16,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/basket")
-public class BasketController {
-    private final BasketService basketService;
+@RequestMapping("/favourites")
+public class FavouritesController {
+    private final FavouritesService favouritesService;
 
-    public BasketController(BasketService basketService) {
-        this.basketService = basketService;
+    public FavouritesController(FavouritesService favouritesService) {
+        this.favouritesService = favouritesService;
     }
 
     @PostMapping(value = "/addition")
-    public ResponseEntity addProductInBasket(@RequestBody ProductAddToBasketDto productAddToBasketDto) {
+    public ResponseEntity addProductToFavourites(@RequestBody ProductAddToFavouritesDto productAddToBasketDto) {
         try {
-            Long count = basketService.addProductToBasket(productAddToBasketDto);
+            favouritesService.addProductToFavourites(productAddToBasketDto);
 
             return new ResponseEntity(
-                    new CountDto(count),
+                    new SuccessMessageDto(SuccessMessage.PRODUCT_ADDED),
                     HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
@@ -51,11 +48,11 @@ public class BasketController {
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
-        } catch (ProductAlreadyInBasketException e) {
+        } catch (ProductAlreadyInFavouritesException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_ALREADY_IN_BASKET),
+                    new ErrorMessageDto(ErrorMessage.PRODUCT_ALREADY_IN_FAVOURITES),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -69,18 +66,18 @@ public class BasketController {
     }
 
     @PostMapping(value = "/get-products")
-    public ResponseEntity getPageOfProductsFromBasket(@RequestBody UserIdPageNumberDto user) {
+    public ResponseEntity getPageOfProductsFromFavourites(@RequestBody UserIdPageNumberDto user) {
         try {
 
             return new ResponseEntity(
-                    basketService.getPageOfProductsFromBasket(user),
+                    favouritesService.getPageOfProductsFromFavourites(user),
                     HttpStatus.OK
             );
-        } catch (BasketIsEmptyException e) {
+        } catch (FavouritesIsEmptyException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.BASKET_IS_EMPTY),
+                    new ErrorMessageDto(ErrorMessage.FAVOURITES_IS_EMPTY),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -94,19 +91,19 @@ public class BasketController {
     }
 
     @PostMapping(value = "/delete-product")
-    public ResponseEntity deleteProductFromBasket(@RequestBody ProductDeleteFromBasketDto productDeleteFromBasketDto) {
+    public ResponseEntity deleteProductFromFavourites(@RequestBody ProductDeleteFromFavouritesDto productDto) {
         try {
-            Long count = basketService.deleteProductFromBasket(productDeleteFromBasketDto);
+            favouritesService.deleteProductFromFavourites(productDto);
 
             return new ResponseEntity(
-                    new CountDto(count),
+                    new SuccessMessageDto(SuccessMessage.PRODUCT_DELETED),
                     HttpStatus.OK
             );
-        } catch (ProductNotInBasketException e) {
+        } catch (ProductNotInFavouritesException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_IN_BASKET),
+                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_IN_FAVOURITES),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -119,20 +116,20 @@ public class BasketController {
         }
     }
 
-    @PostMapping(value = "/clear-basket")
-    public ResponseEntity clearBasket(@RequestBody UserBasketClearDto userBasketClearDto) {
+    @PostMapping(value = "/clear-favourites")
+    public ResponseEntity clearFavourites(@RequestBody UserFavouritesClearDto userFavouritesClearDto) {
         try {
-            basketService.clearBasket(userBasketClearDto);
+            favouritesService.clearFavourites(userFavouritesClearDto);
 
             return new ResponseEntity(
-                    new SuccessMessageDto(SuccessMessage.BASKET_IS_EMPTIED),
+                    new SuccessMessageDto(SuccessMessage.FAVOURITES_IS_EMPTIED),
                     HttpStatus.OK
             );
-        } catch (BasketIsEmptyException e) {
+        } catch (FavouritesIsEmptyException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.BASKET_IS_EMPTY),
+                    new ErrorMessageDto(ErrorMessage.FAVOURITES_IS_EMPTY),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {

@@ -19,7 +19,7 @@ public interface ProductRepository extends CrudRepository<ProductEntity, Long> {
 
     List<ProductEntity> getByNameStartingWith(String name, Pageable pageable);
 
-    long countByNameStartingWith(String name);
+    Long countByNameStartingWith(String name);
 
     @Transactional
     @Modifying

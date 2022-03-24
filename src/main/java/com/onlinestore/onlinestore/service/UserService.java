@@ -66,7 +66,7 @@ public class UserService {
         TokenEntity tokenEntity = tokenRepository.findByToken(token);
 
         if (tokenEntity == null || tokenEntity.getExpiredIn() < new Date().getTime()) {
-            throw new InvalidTokenException(ErrorMessage.UNAUTHORIZED);
+            throw new InvalidTokenExceptionException(ErrorMessage.UNAUTHORIZED);
         }
 
         UserEntity user = userRepository.findByTokenId(tokenEntity.getId());

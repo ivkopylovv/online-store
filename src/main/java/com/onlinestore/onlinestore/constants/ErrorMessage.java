@@ -17,4 +17,8 @@ public class ErrorMessage {
     public static final String PRODUCT_WITH_NAME_ALREADY_EXIST = "Product with that name already exists";
     public static final String PRODUCT_IMAGES_NOT_FOUND = "Product images not found";
     public static final String PRODUCT_TAGS_NOT_FOUND = "Product tags not found";
+
+    public static final String PRODUCT_ALREADY_IN_FAVOURITES = "Product is already in favourites";
+    public static final String PRODUCT_NOT_IN_FAVOURITES = "Product not in favourites";
+    public static final String FAVOURITES_IS_EMPTY = "Favourites is empty";
 }

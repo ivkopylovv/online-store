@@ -7,9 +7,9 @@ import com.onlinestore.onlinestore.dto.response.CountDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
 import com.onlinestore.onlinestore.exception.ProductAlreadyExistException;
-import com.onlinestore.onlinestore.exception.ProductImagesNotFound;
+import com.onlinestore.onlinestore.exception.ProductImagesNotFoundException;
 import com.onlinestore.onlinestore.exception.ProductNotFoundException;
-import com.onlinestore.onlinestore.exception.ProductTagsNotFound;
+import com.onlinestore.onlinestore.exception.ProductTagsNotFoundException;
 import com.onlinestore.onlinestore.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -115,14 +115,14 @@ public class ProductController {
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
-        } catch (ProductImagesNotFound e) {
+        } catch (ProductImagesNotFoundException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
-        } catch (ProductTagsNotFound e) {
+        } catch (ProductTagsNotFoundException e) {
             e.printStackTrace();
 
             return new ResponseEntity(

@@ -57,7 +57,7 @@ public class BasketService {
                 findAllByBasketIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.countPage));
 
         if (basketEntities.isEmpty()) {
-            throw new BasketIsEmpty(ErrorMessage.BASKET_IS_EMPTY);
+            throw new BasketIsEmptyException(ErrorMessage.BASKET_IS_EMPTY);
         }
 
         ArrayList <ProductInfoDto> products = new ArrayList<>();
@@ -77,7 +77,7 @@ public class BasketService {
 
     public Long deleteProductFromBasket(ProductDeleteFromBasketDto product) {
         if (!basketRepository.existsByBasketId(new BasketId(product.getUserId(), product.getProductId()))) {
-            throw new ProductNotInBasket(ErrorMessage.PRODUCT_NOT_IN_BASKET);
+            throw new ProductNotInBasketException(ErrorMessage.PRODUCT_NOT_IN_BASKET);
         }
 
         BasketEntity basket = new BasketEntity(new BasketId(product.getUserId(), product.getProductId()));
@@ -92,7 +92,7 @@ public class BasketService {
         List<BasketEntity> basketEntities = basketRepository.findBasketEntityByBasketIdUserId(userBasketClearDto.getUserId());
 
         if  (basketEntities.isEmpty()) {
-            throw new BasketIsEmpty(ErrorMessage.BASKET_IS_EMPTY);
+            throw new BasketIsEmptyException(ErrorMessage.BASKET_IS_EMPTY);
         }
 
         for (BasketEntity basketEntity: basketEntities) {

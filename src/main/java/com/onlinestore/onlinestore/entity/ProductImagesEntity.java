@@ -21,6 +21,14 @@ public class ProductImagesEntity {
     public ProductImagesEntity() {
     }
 
+    public ProductEntity getProduct() {
+        return product;
+    }
+
+    public void setProduct(ProductEntity product) {
+        this.product = product;
+    }
+
     public Long getId() {
         return id;
     }

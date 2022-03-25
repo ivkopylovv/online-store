@@ -123,7 +123,7 @@ class ProductRepositoryTest {
                         secondProduct.getName(),
                         secondProduct.getDescription(),
                         secondProduct.getPrice(),
-                        Long.valueOf(7)
+                        Long.valueOf(8)
                 );
         ProductEntity actual = productRepository.findByName("name2");
 

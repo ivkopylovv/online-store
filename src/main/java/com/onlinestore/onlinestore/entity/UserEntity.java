@@ -1,10 +1,20 @@
 package com.onlinestore.onlinestore.entity;
 
-import com.onlinestore.onlinestore.constants.UserRole;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static javax.persistence.FetchType.EAGER;
+
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
 
     @Id
@@ -13,62 +23,16 @@ public class UserEntity {
     private String name;
     private String login;
     private String password;
-    private String role;
+    @ManyToMany(fetch = EAGER)
+    private Collection<Role> roles = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = EAGER, cascade = CascadeType.MERGE)
     private TokenEntity token;
-
-    public UserEntity() {
-    }
 
     public UserEntity(String name, String login, String password) {
         this.name = name;
         this.login = login;
         this.password = password;
-        this.role = UserRole.USER;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public void setToken(TokenEntity token) {
-        this.token = token;
-    }
 }

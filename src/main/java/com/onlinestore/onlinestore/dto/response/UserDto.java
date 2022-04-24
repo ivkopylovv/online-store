@@ -13,7 +13,7 @@ public class UserDto {
     public UserDto(UserEntity user) {
         this.id = user.getId();
         this.name = user.getName();
-        this.role = user.getRole();
+        this.role = "ROLE_USER";
     }
 
     public Long getId() {

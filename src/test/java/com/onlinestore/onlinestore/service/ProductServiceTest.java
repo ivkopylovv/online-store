@@ -1,11 +1,7 @@
 package com.onlinestore.onlinestore.service;
 
-import com.onlinestore.onlinestore.entity.ProductEntity;
-import com.onlinestore.onlinestore.entity.ProductImagesEntity;
-import com.onlinestore.onlinestore.entity.ProductTagsEntity;
-import com.onlinestore.onlinestore.repository.ProductImagesRepository;
+import com.onlinestore.onlinestore.entity.Product;
 import com.onlinestore.onlinestore.repository.ProductRepository;
-import com.onlinestore.onlinestore.repository.ProductTagsRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +20,7 @@ class ProductServiceTest {
     @Autowired
     private ProductRepository productRepository;
 
-    private ProductEntity product;
+    private Product product;
 
     @AfterEach
     void tearDown() {
@@ -34,7 +30,7 @@ class ProductServiceTest {
 
     @BeforeEach
     public void setUp() {
-        product = new ProductEntity("name", "description","/image/1.jpg", BigDecimal.valueOf(500));
+        product = new Product("name", "description","/image/1.jpg", BigDecimal.valueOf(500));
     }
 
     @Test
@@ -42,7 +38,7 @@ class ProductServiceTest {
         // given
         productRepository.save(product);
         // when
-        ProductEntity actual = productRepository.findByName(product.getName());
+        Product actual = productRepository.findByName(product.getName());
 
         // then
         assertEquals(product, actual);
@@ -52,7 +48,7 @@ class ProductServiceTest {
     void itShouldGetCountPagesProductsLikeName() {
         // given
         productRepository.save(product);
-        productRepository.save(new ProductEntity(
+        productRepository.save(new Product(
                 "name2",
                 "description2",
                 "/image/1.jpg",

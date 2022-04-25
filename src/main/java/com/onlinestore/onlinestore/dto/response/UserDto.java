@@ -1,6 +1,6 @@
 package com.onlinestore.onlinestore.dto.response;
 
-import com.onlinestore.onlinestore.entity.UserEntity;
+import com.onlinestore.onlinestore.entity.User;
 
 public class UserDto {
     private Long id;
@@ -10,10 +10,10 @@ public class UserDto {
     public UserDto() {
     }
 
-    public UserDto(UserEntity user) {
+    public UserDto(User user) {
         this.id = user.getId();
-        this.name = user.getName();
-        this.role = "ROLE_USER";
+        this.name = user.getUsername();
+
     }
 
     public Long getId() {

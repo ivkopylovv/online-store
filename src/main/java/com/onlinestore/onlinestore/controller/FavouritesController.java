@@ -7,6 +7,7 @@ import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
 import com.onlinestore.onlinestore.exception.*;
 import com.onlinestore.onlinestore.service.FavouritesService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,15 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/favourites")
+@RequestMapping("api/favourites")
+@RequiredArgsConstructor
 public class FavouritesController {
     private final FavouritesService favouritesService;
 
-    public FavouritesController(FavouritesService favouritesService) {
-        this.favouritesService = favouritesService;
-    }
-
-    @PostMapping(value = "/addition")
+    @PostMapping(value = "/add-product")
     public ResponseEntity addProductToFavourites(@RequestBody ProductAddToFavouritesDto productAddToBasketDto) {
         try {
             favouritesService.addProductToFavourites(productAddToBasketDto);

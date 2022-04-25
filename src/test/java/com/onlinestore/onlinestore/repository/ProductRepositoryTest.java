@@ -1,7 +1,7 @@
 package com.onlinestore.onlinestore.repository;
 
 import com.onlinestore.onlinestore.constants.ProductOption;
-import com.onlinestore.onlinestore.entity.ProductEntity;
+import com.onlinestore.onlinestore.entity.Product;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class ProductRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
-    private ProductEntity product;
+    private Product product;
 
     @AfterEach
     void tearDown() {
@@ -32,7 +32,7 @@ class ProductRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        product = new ProductEntity("name", "description","/image/1.jpg", BigDecimal.valueOf(500));
+        product = new Product("name", "description","/image/1.jpg", BigDecimal.valueOf(500));
     }
 
     @Test
@@ -41,7 +41,7 @@ class ProductRepositoryTest {
         productRepository.save(product);
 
         // when
-        ProductEntity actual = productRepository.findByName(product.getName());
+        Product actual = productRepository.findByName(product.getName());
 
         // then
         assertEquals(product, actual);
@@ -51,18 +51,18 @@ class ProductRepositoryTest {
     void itShouldFindProductsListByOrderById() {
         // given
         productRepository.save(product);
-        ProductEntity secondProduct = new ProductEntity(
+        Product secondProduct = new Product(
                 "name2",
                 "description2",
                 "/image/1.jpg",
                 BigDecimal.valueOf(1000)
         );
         productRepository.save(secondProduct);
-        List <ProductEntity> expected = new ArrayList<ProductEntity>(Arrays.asList(product, secondProduct));
+        List <Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
 
         // when
-        List<ProductEntity> actual = productRepository.
-                findByOrderById(PageRequest.of(0, ProductOption.countPage));
+        List<Product> actual = productRepository.
+                findByOrderById(PageRequest.of(0, ProductOption.PAGE_COUNT));
 
         // then
         assertEquals(expected, actual);
@@ -73,12 +73,12 @@ class ProductRepositoryTest {
         // given
         String name = "name";
         productRepository.save(product);
-        List <ProductEntity> expected = new ArrayList<ProductEntity>(Arrays.asList(product));
+        List <Product> expected = new ArrayList<Product>(Arrays.asList(product));
 
         // when
-        List<ProductEntity> actual = productRepository.getByNameStartingWith(
+        List<Product> actual = productRepository.getByNameStartingWith(
                 name,
-                PageRequest.of(0, ProductOption.countPage, Sort.by("id").ascending())
+                PageRequest.of(0, ProductOption.PAGE_COUNT, Sort.by("id").ascending())
         );
 
         // then
@@ -91,14 +91,14 @@ class ProductRepositoryTest {
         // given
         String name = "name";
         productRepository.save(product);
-        ProductEntity secondProduct = new ProductEntity(
+        Product secondProduct = new Product(
                 "name2",
                 "description2",
                 "/image/1.jpg",
                 BigDecimal.valueOf(1000)
         );
         productRepository.save(secondProduct);
-        List <ProductEntity> expected = new ArrayList<ProductEntity>(Arrays.asList(product, secondProduct));
+        List <Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
 
         // when
         Long actual = productRepository.countByNameStartingWith(name);
@@ -111,7 +111,7 @@ class ProductRepositoryTest {
     void itShouldUpdateProductNameAndDescriptionAndPriceById() {
         // given
         productRepository.save(product);
-        ProductEntity secondProduct = new ProductEntity(
+        Product secondProduct = new Product(
                 "name2",
                 "description2",
                 "/image/1.jpg",
@@ -125,7 +125,7 @@ class ProductRepositoryTest {
                         secondProduct.getPrice(),
                         Long.valueOf(8)
                 );
-        ProductEntity actual = productRepository.findByName("name2");
+        Product actual = productRepository.findByName("name2");
 
         // then
         assertEquals(product.getId(), actual.getId());

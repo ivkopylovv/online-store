@@ -1,7 +1,6 @@
 package com.onlinestore.onlinestore.service;
-
-import com.onlinestore.onlinestore.entity.TokenEntity;
-import com.onlinestore.onlinestore.entity.UserEntity;
+/*
+import com.onlinestore.onlinestore.entity.User;
 import com.onlinestore.onlinestore.repository.TokenRepository;
 import com.onlinestore.onlinestore.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -24,12 +23,12 @@ class UserServiceTest {
     @Autowired
     private TokenRepository tokenRepository;
 
-    private UserEntity user;
+    private User user;
     private TokenEntity token;
 
     @BeforeEach
     public void setUp() {
-        user = new UserEntity("name","name@name","123456");
+        user = new User("name","name@name","123456");
         token = new TokenEntity(user, "token", 500L);
     }
 
@@ -47,7 +46,7 @@ class UserServiceTest {
         userRepository.save(user);
 
         // when
-        UserEntity actual = userRepository.findById(user.getId()).get();
+        User actual = userRepository.findById(user.getId()).get();
 
         // then
         assertEquals(5, actual.getId());
@@ -74,7 +73,7 @@ class UserServiceTest {
         tokenRepository.save(token);
 
         // when
-        UserEntity actual = userRepository.findByTokenId(token.getId());
+        User actual = userRepository.findByTokenId(token.getId());
 
         // then
         assertEquals(user, actual);
@@ -93,4 +92,4 @@ class UserServiceTest {
         // then
         assertEquals(null, actual);
     }
-}
+}*/

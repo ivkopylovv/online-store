@@ -10,7 +10,8 @@ import com.onlinestore.onlinestore.dto.response.CountDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
 import com.onlinestore.onlinestore.exception.*;
-import com.onlinestore.onlinestore.service.BasketService;
+import com.onlinestore.onlinestore.service.CartService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,18 +20,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/basket")
-public class BasketController {
-    private final BasketService basketService;
+@RequestMapping("api/cart")
+@RequiredArgsConstructor
+public class CartController {
+    private final CartService cartService;
 
-    public BasketController(BasketService basketService) {
-        this.basketService = basketService;
-    }
-
-    @PostMapping(value = "/addition")
+    @PostMapping(value = "/add-product")
     public ResponseEntity addProductInBasket(@RequestBody ProductAddToBasketDto productAddToBasketDto) {
         try {
-            Long count = basketService.addProductToBasket(productAddToBasketDto);
+            Long count = cartService.addProductToBasket(productAddToBasketDto);
 
             return new ResponseEntity(
                     new CountDto(count),
@@ -73,7 +71,7 @@ public class BasketController {
         try {
 
             return new ResponseEntity(
-                    basketService.getPageOfProductsFromBasket(user),
+                    cartService.getPageOfProductsFromBasket(user),
                     HttpStatus.OK
             );
         } catch (BasketIsEmptyException e) {
@@ -96,7 +94,7 @@ public class BasketController {
     @PostMapping(value = "/delete-product")
     public ResponseEntity deleteProductFromBasket(@RequestBody ProductDeleteFromBasketDto productDeleteFromBasketDto) {
         try {
-            Long count = basketService.deleteProductFromBasket(productDeleteFromBasketDto);
+            Long count = cartService.deleteProductFromBasket(productDeleteFromBasketDto);
 
             return new ResponseEntity(
                     new CountDto(count),
@@ -122,7 +120,7 @@ public class BasketController {
     @PostMapping(value = "/clear-basket")
     public ResponseEntity clearBasket(@RequestBody UserBasketClearDto userBasketClearDto) {
         try {
-            basketService.clearBasket(userBasketClearDto);
+            cartService.clearBasket(userBasketClearDto);
 
             return new ResponseEntity(
                     new SuccessMessageDto(SuccessMessage.BASKET_IS_EMPTIED),

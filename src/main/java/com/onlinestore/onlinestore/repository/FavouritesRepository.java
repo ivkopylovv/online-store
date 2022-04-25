@@ -1,8 +1,7 @@
 package com.onlinestore.onlinestore.repository;
 
 import com.onlinestore.onlinestore.embeddable.FavouritesId;
-import com.onlinestore.onlinestore.entity.BasketEntity;
-import com.onlinestore.onlinestore.entity.FavouritesEntity;
+import com.onlinestore.onlinestore.entity.Favourites;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -10,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface FavouritesRepository extends CrudRepository<FavouritesEntity, Long> {
+public interface FavouritesRepository extends CrudRepository<Favourites, Long> {
     boolean existsByFavouritesId(FavouritesId favouritesId);
-    List<FavouritesEntity> findAllByFavouritesIdUserId(Long id, Pageable pageable);
-    List<FavouritesEntity> findFavouritesEntityByFavouritesIdUserId(Long id);
+    List<Favourites> findAllByFavouritesIdUserId(Long id, Pageable pageable);
+    List<Favourites> findFavouritesEntityByFavouritesIdUserId(Long id);
 }

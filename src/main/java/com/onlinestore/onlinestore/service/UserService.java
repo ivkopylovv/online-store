@@ -1,89 +1,62 @@
 package com.onlinestore.onlinestore.service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlinestore.onlinestore.constants.ErrorMessage;
-import com.onlinestore.onlinestore.dto.request.UserLogoutDto;
-import com.onlinestore.onlinestore.dto.request.UserLoginDto;
 import com.onlinestore.onlinestore.dto.request.UserRegistrationDto;
+import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.entity.Role;
-import com.onlinestore.onlinestore.entity.TokenEntity;
-import com.onlinestore.onlinestore.entity.UserEntity;
+import com.onlinestore.onlinestore.entity.User;
 import com.onlinestore.onlinestore.exception.*;
-import com.onlinestore.onlinestore.dto.response.UserDto;
 import com.onlinestore.onlinestore.repository.RoleRepository;
-import com.onlinestore.onlinestore.repository.TokenRepository;
 import com.onlinestore.onlinestore.repository.UserRepository;
+import com.onlinestore.onlinestore.utility.TokenHelper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeTypeUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
-    private final TokenService tokenService;
-    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    UserService(UserRepository userRepository, TokenRepository tokenRepository, TokenService tokenService, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.tokenRepository = tokenRepository;
-        this.tokenService = tokenService;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    public UserEntity registerUser(UserRegistrationDto userDto) throws UserAlreadyExistException {
+    public User registerUser(UserRegistrationDto userDto) throws UserAlreadyExistException {
         if (userRepository.findByLogin(userDto.getLogin()) != null) {
             throw new UserAlreadyExistException(ErrorMessage.USER_EXISTS);
         }
 
-        UserEntity user = new UserEntity(userDto.getName(), userDto.getLogin(), userDto.getPassword());
+        User user = new User(
+                userDto.getName(),
+                userDto.getLogin(),
+                userDto.getPassword()
+        );
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.getRoles().add(new Role(1L, "ROLE_USER"));
 
         return userRepository.save(user);
     }
 
-    public UserDto getUserInfo(String token) {
-        TokenEntity tokenEntity = tokenRepository.findByToken(token);
-
-        if (tokenEntity == null || tokenEntity.getExpiredIn() < new Date().getTime()) {
-            throw new InvalidTokenExceptionException(ErrorMessage.UNAUTHORIZED);
-        }
-
-        UserEntity user = userRepository.findByTokenId(tokenEntity.getId());
-
-        return new UserDto(user);
-    }
-
-    public void logoutUser(UserLogoutDto userLogoutDto) {
-        UserEntity user = userRepository.findById(userLogoutDto.getId()).get();
-
-        if (user == null) {
-            throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND);
-        }
-
-        TokenEntity token = tokenRepository.findByUserId(userLogoutDto.getId());
-
-        if (token == null) {
-            throw new TokenNotFoundException(ErrorMessage.TOKEN_NOT_FOUND);
-        }
-
-        user.setToken(null);
-        userRepository.save(user);
-        tokenRepository.delete(token);
-    }
-
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findByLogin(username);
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        User user = userRepository.findByLogin(login);
 
         if (user == null) {
             throw new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND);
@@ -95,6 +68,31 @@ public class UserService implements UserDetailsService {
         });
 
         return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), authorities);
+    }
+
+    public User getUser(String login) {
+        return userRepository.findByLogin(login);
+    }
+
+    public void successfulRefresh(HttpServletRequest request, HttpServletResponse response, String authorizationHeader) throws IOException {
+        String refresh_token = authorizationHeader.substring("Bearer ".length());
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(refresh_token);
+        String login = decodedJWT.getSubject();
+        User user = getUser(login);
+        String access_token = TokenHelper.getAccessToken(user, request);
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("access_token", access_token);
+        tokens.put("refresh_token", refresh_token);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+    }
+
+    public void unsuccessfulRefresh(HttpServletResponse response, Exception e) throws IOException {
+        response.setStatus(FORBIDDEN.value());
+        response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), new ErrorMessageDto(e.getMessage()));
     }
 }
 

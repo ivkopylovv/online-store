@@ -1,7 +1,6 @@
 package com.onlinestore.onlinestore.repository;
-
-import com.onlinestore.onlinestore.entity.TokenEntity;
-import com.onlinestore.onlinestore.entity.UserEntity;
+/*
+import com.onlinestore.onlinestore.entity.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ class UserRepositoryTest {
     @Autowired
     private TokenRepository tokenRepository;
 
-    private UserEntity user;
+    private User user;
     private TokenEntity token;
 
     @AfterEach
@@ -31,7 +30,7 @@ class UserRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        user = new UserEntity("name","name@name","123456");
+        user = new User("name","name@name","123456");
         token = new TokenEntity(user, "token", 500L);
     }
 
@@ -42,7 +41,7 @@ class UserRepositoryTest {
         userRepository.save(user);
 
         // when
-        UserEntity actual = userRepository.findByLogin(login);
+        User actual = userRepository.findByLogin(login);
 
         // then
         assertThat(user).isEqualTo(actual);
@@ -54,7 +53,7 @@ class UserRepositoryTest {
         String login = "name@name";
 
         // when
-        UserEntity excepted = userRepository.findByLogin(login);
+        User excepted = userRepository.findByLogin(login);
 
         // then
         assertThat(excepted).isNull();
@@ -81,9 +80,9 @@ class UserRepositoryTest {
         tokenRepository.save(token);
 
         // when
-        UserEntity actual = userRepository.findByTokenId(token.getId());
+        User actual = userRepository.findByTokenId(token.getId());
 
         // then
         assertEquals(user, actual);
     }
-}
+}*/

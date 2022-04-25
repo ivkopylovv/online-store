@@ -2,7 +2,7 @@ package com.onlinestore.onlinestore.repository;
 
 import com.onlinestore.onlinestore.constants.ProductOption;
 import com.onlinestore.onlinestore.embeddable.FavouritesId;
-import com.onlinestore.onlinestore.entity.FavouritesEntity;
+import com.onlinestore.onlinestore.entity.Favourites;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class FavouritesRepositoryTest {
     @Autowired
     private FavouritesRepository favouritesRepository;
 
-    private FavouritesEntity favouritesEntity;
+    private Favourites favouritesEntity;
     private FavouritesId favouritesId;
 
     @AfterEach
@@ -32,7 +32,7 @@ class FavouritesRepositoryTest {
     @BeforeEach
     public void setUp() {
         favouritesId = new FavouritesId(Long.valueOf(2), Long.valueOf(2));
-        favouritesEntity = new FavouritesEntity(favouritesId);
+        favouritesEntity = new Favourites(favouritesId);
     }
 
     @Test
@@ -51,11 +51,11 @@ class FavouritesRepositoryTest {
     void itShouldFindAllByFavouritesIdUserId() {
         // given
         favouritesRepository.save(favouritesEntity);
-        List<FavouritesEntity> excepted = new ArrayList<>(Arrays.asList(favouritesEntity));
+        List<Favourites> excepted = new ArrayList<>(Arrays.asList(favouritesEntity));
 
         // when
-        List<FavouritesEntity> actual = favouritesRepository.
-                findAllByFavouritesIdUserId(Long.valueOf(2), PageRequest.of(0, ProductOption.countPage));
+        List<Favourites> actual = favouritesRepository.
+                findAllByFavouritesIdUserId(Long.valueOf(2), PageRequest.of(0, ProductOption.PAGE_COUNT));
 
         // then
         assertEquals(excepted.get(0).getFavouritesId().getUserId(), actual.get(0).getFavouritesId().getUserId());

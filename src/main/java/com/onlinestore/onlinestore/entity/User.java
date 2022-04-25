@@ -1,8 +1,6 @@
 package com.onlinestore.onlinestore.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -10,27 +8,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.GenerationType.AUTO;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+@Getter
+@Setter
+@Table(name="\"user\"")
+public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = AUTO)
     private Long id;
-    private String name;
+    private String username;
     private String login;
     private String password;
+
     @ManyToMany(fetch = EAGER)
     private Collection<Role> roles = new ArrayList<>();
 
-    @OneToOne(fetch = EAGER, cascade = CascadeType.MERGE)
-    private TokenEntity token;
-
-    public UserEntity(String name, String login, String password) {
-        this.name = name;
+    public User(String username, String login, String password) {
+        this.username = username;
         this.login = login;
         this.password = password;
     }

@@ -1,30 +1,26 @@
 package com.onlinestore.onlinestore.repository;
-
-import com.onlinestore.onlinestore.constants.ProductOption;
-import com.onlinestore.onlinestore.embeddable.BasketId;
-import com.onlinestore.onlinestore.entity.BasketEntity;
+/*
+import com.onlinestore.onlinestore.embeddable.CartId;
+import com.onlinestore.onlinestore.entity.Cart;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 @DataJpaTest
-class BasketRepositoryTest {
+class CartRepositoryTest {
 
     @Autowired
     private BasketRepository basketRepository;
 
-    private BasketEntity basket;
-    private BasketId basketId;
+    private Cart cart;
+    private CartId cartId;
 
     @AfterEach
     void tearDown() {
@@ -33,17 +29,17 @@ class BasketRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        basketId = new BasketId(Long.valueOf(1), Long.valueOf(1));
-        basket = new BasketEntity(basketId);
+        cartId = new CartId(Long.valueOf(1), Long.valueOf(1));
+        cart = new Cart(cartId);
     }
 
     @Test
     void itShouldCheckThatBasketExistsEntityByBasketId() {
         // given
-        basketRepository.save(basket);
+        basketRepository.save(cart);
 
         // when
-        boolean actual = basketRepository.existsByBasketId(basketId);
+        boolean actual = basketRepository.existsByBasketId(cartId);
 
         // then
         assertEquals(true, actual);
@@ -52,11 +48,11 @@ class BasketRepositoryTest {
     @Test
     void itShouldFindAllEntitiesByBasketIdUserId() {
         // given
-        basketRepository.save(basket);
-        List<BasketEntity> excepted = new ArrayList<BasketEntity>();
+        basketRepository.save(cart);
+        List<Cart> excepted = new ArrayList<Cart>();
 
         // when
-        List <BasketEntity> actual = basketRepository.
+        List <Cart> actual = basketRepository.
                 findBasketEntityByBasketIdUserId(Long.valueOf(3));
 
         // then
@@ -66,10 +62,10 @@ class BasketRepositoryTest {
     @Test
     void itShouldReturnCountByBasketIdUserId() {
         // given
-        basketRepository.save(basket);
-        BasketId secondBasketId = new BasketId(Long.valueOf(2), Long.valueOf(2));
-        BasketEntity secondBasket = new BasketEntity(secondBasketId);
-        basketRepository.save(secondBasket);
+        basketRepository.save(cart);
+        CartId secondCartId = new CartId(Long.valueOf(2), Long.valueOf(2));
+        Cart secondCart = new Cart(secondCartId);
+        basketRepository.save(secondCart);
 
         // when
         Long actual = basketRepository.countByBasketIdUserId(Long.valueOf(2));
@@ -77,4 +73,4 @@ class BasketRepositoryTest {
         // then
         assertEquals(Long.valueOf(1), actual);
     }
-}
+}*/

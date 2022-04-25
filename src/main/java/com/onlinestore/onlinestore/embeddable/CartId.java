@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
-import java.util.Objects;
 
 @Embeddable
 @AllArgsConstructor
@@ -12,7 +11,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class FavouritesId implements Serializable {
+public class CartId implements Serializable {
     private Long userId;
     private Long productId;
 }

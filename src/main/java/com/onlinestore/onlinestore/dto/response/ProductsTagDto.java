@@ -1,9 +1,5 @@
 package com.onlinestore.onlinestore.dto.response;
 
-import com.onlinestore.onlinestore.entity.ProductTagsEntity;
-
-import java.util.ArrayList;
-
 public class ProductsTagDto {
     private String type;
     private String value;

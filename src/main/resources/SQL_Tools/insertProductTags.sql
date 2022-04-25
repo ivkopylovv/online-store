@@ -1,4 +1,4 @@
-INSERT INTO product_tags_entity VALUES
+INSERT INTO product_tags VALUES
     /* first product */
     (1, 'Экран', '6.1"/1792x828 Пикс', 1),
     (2, 'Технология экрана', 'IPS', 1),

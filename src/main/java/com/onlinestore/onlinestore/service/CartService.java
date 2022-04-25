@@ -7,13 +7,14 @@ import com.onlinestore.onlinestore.dto.request.ProductDeleteFromBasketDto;
 import com.onlinestore.onlinestore.dto.request.UserBasketClearDto;
 import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
 import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
-import com.onlinestore.onlinestore.entity.ProductEntity;
-import com.onlinestore.onlinestore.embeddable.BasketId;
-import com.onlinestore.onlinestore.entity.BasketEntity;
+import com.onlinestore.onlinestore.entity.Product;
+import com.onlinestore.onlinestore.embeddable.CartId;
+import com.onlinestore.onlinestore.entity.Cart;
 import com.onlinestore.onlinestore.exception.*;
-import com.onlinestore.onlinestore.repository.BasketRepository;
+import com.onlinestore.onlinestore.repository.CartRepository;
 import com.onlinestore.onlinestore.repository.ProductRepository;
 import com.onlinestore.onlinestore.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -21,17 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class BasketService {
-
-    private final BasketRepository basketRepository;
+@RequiredArgsConstructor
+public class CartService {
+    private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
-
-    public BasketService(BasketRepository basketRepository, ProductRepository productRepository, UserRepository userRepository) {
-        this.basketRepository = basketRepository;
-        this.productRepository = productRepository;
-        this.userRepository = userRepository;
-    }
 
     public Long addProductToBasket(ProductAddToBasketDto product) {
         if (!userRepository.existsById(product.getUserId())) {
@@ -42,29 +37,29 @@ public class BasketService {
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND);
         }
 
-        if (basketRepository.existsByBasketId(new BasketId(product.getUserId(), product.getProductId()))) {
+        if (cartRepository.existsByCartId(new CartId(product.getUserId(), product.getProductId()))) {
             throw new ProductAlreadyInBasketException(ErrorMessage.PRODUCT_ALREADY_IN_BASKET);
         }
 
-        BasketEntity basket = new BasketEntity(new BasketId(product.getUserId(), product.getProductId()));
-        basketRepository.save(basket);
+        Cart cart = new Cart(new CartId(product.getUserId(), product.getProductId()));
+        cartRepository.save(cart);
 
-        return basketRepository.countByBasketIdUserId(product.getUserId());
+        return cartRepository.countByCartIdUserId(product.getUserId());
     }
 
     public ArrayList<ProductInfoDto> getPageOfProductsFromBasket(UserIdPageNumberDto user) {
-        List<BasketEntity> basketEntities = basketRepository.
-                findAllByBasketIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.countPage));
+        List<Cart> cartEntities = cartRepository.
+                findAllByCartIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.PAGE_COUNT));
 
-        if (basketEntities.isEmpty()) {
+        if (cartEntities.isEmpty()) {
             throw new BasketIsEmptyException(ErrorMessage.BASKET_IS_EMPTY);
         }
 
         ArrayList <ProductInfoDto> products = new ArrayList<>();
 
-        for (BasketEntity basketEntity: basketEntities) {
-            ProductEntity productEntity = productRepository.
-                    findById(basketEntity.getBasketId().getProductId()).get();
+        for (Cart cart : cartEntities) {
+            Product productEntity = productRepository.
+                    findById(cart.getCartId().getProductId()).get();
             products.add(new ProductInfoDto(
                     productEntity.getId(),
                     productEntity.getName(),
@@ -76,27 +71,27 @@ public class BasketService {
     }
 
     public Long deleteProductFromBasket(ProductDeleteFromBasketDto product) {
-        if (!basketRepository.existsByBasketId(new BasketId(product.getUserId(), product.getProductId()))) {
+        if (!cartRepository.existsByCartId(new CartId(product.getUserId(), product.getProductId()))) {
             throw new ProductNotInBasketException(ErrorMessage.PRODUCT_NOT_IN_BASKET);
         }
 
-        BasketEntity basket = new BasketEntity(new BasketId(product.getUserId(), product.getProductId()));
+        Cart cart = new Cart(new CartId(product.getUserId(), product.getProductId()));
 
-        basketRepository.delete(basket);
+        cartRepository.delete(cart);
 
-        return basketRepository.countByBasketIdUserId(product.getUserId());
+        return cartRepository.countByCartIdUserId(product.getUserId());
     }
 
     public void clearBasket(UserBasketClearDto userBasketClearDto) {
 
-        List<BasketEntity> basketEntities = basketRepository.findBasketEntityByBasketIdUserId(userBasketClearDto.getUserId());
+        List<Cart> cartEntities = cartRepository.findBasketEntityByCartIdUserId(userBasketClearDto.getUserId());
 
-        if  (basketEntities.isEmpty()) {
+        if  (cartEntities.isEmpty()) {
             throw new BasketIsEmptyException(ErrorMessage.BASKET_IS_EMPTY);
         }
 
-        for (BasketEntity basketEntity: basketEntities) {
-            basketRepository.delete(basketEntity);
+        for (Cart cart : cartEntities) {
+            cartRepository.delete(cart);
         }
     }
 

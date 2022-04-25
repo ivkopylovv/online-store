@@ -1,4 +1,4 @@
-INSERT INTO product_images_entity VALUES
+INSERT INTO product_images VALUES
     /* first product */
     (1, '/images/1/1.jpg', 1),
     (2, '/images/1/2.jpg', 1),

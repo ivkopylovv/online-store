@@ -1,7 +1,7 @@
 package com.onlinestore.onlinestore.repository;
 
-import com.onlinestore.onlinestore.entity.ProductEntity;
-import com.onlinestore.onlinestore.entity.ProductImagesEntity;
+import com.onlinestore.onlinestore.entity.Product;
+import com.onlinestore.onlinestore.entity.ProductImages;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class ProductImagesRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
-    private ProductImagesEntity product;
+    private ProductImages product;
 
     @AfterEach
     void tearDown() {
@@ -31,20 +31,20 @@ class ProductImagesRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        product = new ProductImagesEntity(Long.valueOf(3), "/images/1.jpg");
+        product = new ProductImages(Long.valueOf(3), "/images/1.jpg");
     }
 
     @Test
     void itShouldFindProductByProductId() {
         // given
-        ProductEntity productEntity = new ProductEntity();
+        Product productEntity = new Product();
         productRepository.save(productEntity);
         product.setProduct(productEntity);
         productImagesRepository.save(product);
-        List<ProductImagesEntity> expected = new ArrayList<>(Arrays.asList(product));
+        List<ProductImages> expected = new ArrayList<>(Arrays.asList(product));
 
         // when
-        List<ProductImagesEntity> actual = productImagesRepository.findByProductId(productEntity.getId());
+        List<ProductImages> actual = productImagesRepository.findByProductId(productEntity.getId());
 
         // then
         assertEquals(expected.get(0).getId(),actual.get(0).getId());

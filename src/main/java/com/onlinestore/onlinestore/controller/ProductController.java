@@ -11,20 +11,17 @@ import com.onlinestore.onlinestore.exception.ProductImagesNotFoundException;
 import com.onlinestore.onlinestore.exception.ProductNotFoundException;
 import com.onlinestore.onlinestore.exception.ProductTagsNotFoundException;
 import com.onlinestore.onlinestore.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class ProductController {
-
     private final ProductService productService;
-
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
 
     @PostMapping(value = "/add-product")
     public ResponseEntity addProduct(@RequestBody ProductAllFieldsDto product) {

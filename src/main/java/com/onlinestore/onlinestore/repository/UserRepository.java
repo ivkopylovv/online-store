@@ -1,15 +1,14 @@
 package com.onlinestore.onlinestore.repository;
 
-import com.onlinestore.onlinestore.entity.UserEntity;
+import com.onlinestore.onlinestore.entity.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends CrudRepository <UserEntity, Long> {
-    UserEntity findByLogin(String login);
-    UserEntity findByTokenId(Long tokenId);
-    Optional<UserEntity> findById(Long id);
+public interface UserRepository extends CrudRepository <User, Long> {
+    User findByLogin(String login);
+    Optional<User> findById(Long id);
     boolean existsById(Long id);
 }

@@ -6,12 +6,13 @@ import com.onlinestore.onlinestore.dto.request.*;
 import com.onlinestore.onlinestore.dto.response.ProductIdDto;
 import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
 import com.onlinestore.onlinestore.embeddable.FavouritesId;
-import com.onlinestore.onlinestore.entity.FavouritesEntity;
-import com.onlinestore.onlinestore.entity.ProductEntity;
+import com.onlinestore.onlinestore.entity.Favourites;
+import com.onlinestore.onlinestore.entity.Product;
 import com.onlinestore.onlinestore.exception.*;
 import com.onlinestore.onlinestore.repository.FavouritesRepository;
 import com.onlinestore.onlinestore.repository.ProductRepository;
 import com.onlinestore.onlinestore.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -19,18 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FavouritesService {
     private final FavouritesRepository favouritesRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    public FavouritesService(FavouritesRepository favouritesRepository, UserRepository userRepository, ProductRepository productRepository) {
-        this.favouritesRepository = favouritesRepository;
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
-    }
-
-    public FavouritesEntity addProductToFavourites(ProductAddToFavouritesDto productDto) {
+    public Favourites addProductToFavourites(ProductAddToFavouritesDto productDto) {
         if (!userRepository.existsById(productDto.getUserId())) {
             throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND);
         }
@@ -43,15 +39,15 @@ public class FavouritesService {
             throw new ProductAlreadyInFavouritesException(ErrorMessage.PRODUCT_ALREADY_IN_FAVOURITES);
         }
 
-        FavouritesEntity favouritesEntity = new FavouritesEntity
+        Favourites favouritesEntity = new Favourites
                 (new FavouritesId(productDto.getUserId(), productDto.getProductId()));
 
         return favouritesRepository.save(favouritesEntity);
     }
 
     public ArrayList<ProductInfoDto> getPageOfProductsFromFavourites(UserIdPageNumberDto user) {
-        List<FavouritesEntity> favouritesEntities = favouritesRepository.
-                findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.countPage));
+        List<Favourites> favouritesEntities = favouritesRepository.
+                findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.PAGE_COUNT));
 
         if (favouritesEntities.isEmpty()) {
             throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
@@ -59,8 +55,8 @@ public class FavouritesService {
 
         ArrayList <ProductInfoDto> products = new ArrayList<>();
 
-        for (FavouritesEntity favouritesEntity: favouritesEntities) {
-            ProductEntity productEntity = productRepository.findById(
+        for (Favourites favouritesEntity: favouritesEntities) {
+            Product productEntity = productRepository.findById(
                     favouritesEntity.getFavouritesId().getProductId()).get();
             products.add(new ProductInfoDto(
                     productEntity.getId(),
@@ -73,8 +69,8 @@ public class FavouritesService {
     }
 
     public ArrayList<ProductIdDto> getPageOfProductsIdFromFavourites(UserIdPageNumberDto user) {
-        List<FavouritesEntity> favouritesEntities = favouritesRepository.
-                findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.countPage));
+        List<Favourites> favouritesEntities = favouritesRepository.
+                findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.PAGE_COUNT));
 
         if (favouritesEntities.isEmpty()) {
             throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
@@ -82,8 +78,8 @@ public class FavouritesService {
 
         ArrayList <ProductIdDto> products = new ArrayList<>();
 
-        for (FavouritesEntity favouritesEntity: favouritesEntities) {
-            ProductEntity productEntity = productRepository.findById(
+        for (Favourites favouritesEntity: favouritesEntities) {
+            Product productEntity = productRepository.findById(
                     favouritesEntity.getFavouritesId().getProductId()).get();
             products.add(new ProductIdDto(productEntity.getId()));
         }
@@ -96,20 +92,20 @@ public class FavouritesService {
             throw new ProductNotInFavouritesException(ErrorMessage.PRODUCT_NOT_IN_FAVOURITES);
         }
 
-        FavouritesEntity favourites  = new FavouritesEntity(new FavouritesId(productDto.getUserId(), productDto.getProductId()));
+        Favourites favourites  = new Favourites(new FavouritesId(productDto.getUserId(), productDto.getProductId()));
 
         favouritesRepository.delete(favourites);
     }
 
     public void clearFavourites(UserFavouritesClearDto user) {
 
-        List<FavouritesEntity> favouritesEntities = favouritesRepository.findFavouritesEntityByFavouritesIdUserId(user.getUserId());
+        List<Favourites> favouritesEntities = favouritesRepository.findFavouritesEntityByFavouritesIdUserId(user.getUserId());
 
         if  (favouritesEntities.isEmpty()) {
             throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
         }
 
-        for (FavouritesEntity favouritesEntity: favouritesEntities) {
+        for (Favourites favouritesEntity: favouritesEntities) {
             favouritesRepository.delete(favouritesEntity);
         }
     }

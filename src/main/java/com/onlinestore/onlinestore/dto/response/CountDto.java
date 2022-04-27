@@ -1,17 +1,15 @@
 package com.onlinestore.onlinestore.dto.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class CountDto {
     private Long count;
 
-    public long getCount() {
-        return count;
-    }
-
-    public CountDto(long count) {
-        this.count = count;
-    }
-
-    public void setCount(long count) {
-        this.count = count;
-    }
 }

@@ -8,6 +8,7 @@ public class SuccessMessage {
     public static final String PRODUCT_DELETED = "Product deleted";
     public static final String PRODUCT_UPDATED = "Product updated";
 
-    public static final String BASKET_IS_EMPTIED = "Basket is emptied";
+    public static final String CART_IS_EMPTIED = "Cart is emptied";
     public static final String FAVOURITES_IS_EMPTIED = "Favourites is emptied";
 }
+

@@ -10,8 +10,7 @@ import com.onlinestore.onlinestore.dto.request.UserRegistrationDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.entity.Role;
 import com.onlinestore.onlinestore.entity.User;
-import com.onlinestore.onlinestore.exception.*;
-import com.onlinestore.onlinestore.repository.RoleRepository;
+import com.onlinestore.onlinestore.exception.UserAlreadyExistException;
 import com.onlinestore.onlinestore.repository.UserRepository;
 import com.onlinestore.onlinestore.utility.TokenHelper;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +26,12 @@ import org.springframework.util.MimeTypeUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Service
 @RequiredArgsConstructor
@@ -37,30 +39,25 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public User registerUser(UserRegistrationDto userDto) throws UserAlreadyExistException {
-        if (userRepository.findByLogin(userDto.getLogin()) != null) {
-            throw new UserAlreadyExistException(ErrorMessage.USER_EXISTS);
-        }
+    public void registerUser(UserRegistrationDto userDto) {
+        userRepository.findByLogin(userDto.getLogin()).
+                orElseThrow(() -> new UserAlreadyExistException(ErrorMessage.USER_EXISTS));
 
         User user = new User(
-                userDto.getName(),
+                userDto.getUsername(),
                 userDto.getLogin(),
                 userDto.getPassword()
         );
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.getRoles().add(new Role(1L, "ROLE_USER"));
-
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        User user = userRepository.findByLogin(login);
-
-        if (user == null) {
-            throw new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND);
-        }
+    public UserDetails loadUserByUsername(String login) {
+        User user = userRepository.findByLogin(login).
+                orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> {
@@ -71,12 +68,13 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUser(String login) {
-        return userRepository.findByLogin(login);
+        return userRepository.findByLogin(login).
+                orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND));
     }
 
     public void successfulRefresh(HttpServletRequest request, HttpServletResponse response, String authorizationHeader) throws IOException {
         String refresh_token = authorizationHeader.substring("Bearer ".length());
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        Algorithm algorithm = TokenHelper.getToken();
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(refresh_token);
         String login = decodedJWT.getSubject();
@@ -90,7 +88,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void unsuccessfulRefresh(HttpServletResponse response, Exception e) throws IOException {
-        response.setStatus(FORBIDDEN.value());
+        response.setStatus(UNAUTHORIZED.value());
         response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), new ErrorMessageDto(e.getMessage()));
     }

@@ -1,20 +1,15 @@
 package com.onlinestore.onlinestore.dto.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class ProductIdDto {
     private Long id;
 
-    public ProductIdDto() {
-    }
-
-    public ProductIdDto(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

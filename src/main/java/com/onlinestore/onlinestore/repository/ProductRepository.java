@@ -10,15 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends CrudRepository<Product, Long> {
-    Product findByName(String name);
-
+    Optional<Product> findByName(String name);
     List<Product> findByOrderById(Pageable pageable);
-
     List<Product> getByNameStartingWith(String name, Pageable pageable);
-
     Long countByNameStartingWith(String name);
 
     @Transactional

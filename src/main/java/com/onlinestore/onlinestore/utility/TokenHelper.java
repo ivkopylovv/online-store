@@ -1,7 +1,6 @@
 package com.onlinestore.onlinestore.utility;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.onlinestore.onlinestore.constants.TokenOption;
 import com.onlinestore.onlinestore.entity.Role;

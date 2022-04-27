@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +31,9 @@ public class ProductService {
     private final ProductImagesRepository productImagesRepository;
     private final ProductTagsRepository productTagsRepository;
 
-    public Product addProduct(ProductAllFieldsDto product) {
-        if (productRepository.findByName(product.getName()) != null) {
-            throw new ProductAlreadyExistException(ErrorMessage.PRODUCT_ALREADY_EXIST);
-        }
+    public void addProduct(ProductAllFieldsDto product) {
+        productRepository.findByName(product.getName()).
+                orElseThrow(() -> new ProductAlreadyExistException(ErrorMessage.PRODUCT_ALREADY_EXIST));
 
         Product newProduct = new Product(
                 product.getName(),
@@ -40,31 +41,35 @@ public class ProductService {
                 product.getImage(),
                 product.getPrice()
         );
-
-        return productRepository.save(newProduct);
+        productRepository.save(newProduct);
     }
 
     public FullProductDto getProduct(long id) {
-        Product product = productRepository.findById(id).get();
+        Optional<Product> product = Optional.ofNullable(productRepository.findById(id).
+                orElseThrow(() -> new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND)));
 
-        if (product == null) {
-            throw new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND);
-        }
+        List <ProductImages> productImagesEntities = productImagesRepository.
+                findByProductId(id).
+                stream().
+                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
+                    if (result.isEmpty()) {
+                        throw new ProductNotFoundException(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND);
+                    }
+                    return result;
+                }));
 
-        List <ProductImages> productImagesEntities = productImagesRepository.findByProductId(id);
+        List <ProductTags> productTagsEntities = productTagsRepository.
+                findByProductId(id).
+                stream().
+                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
+                    if (result.isEmpty()) {
+                        throw new ProductNotFoundException(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND);
+                    }
+                    return result;
+                }));
 
-        if (productImagesEntities.isEmpty()) {
-            throw new ProductNotFoundException(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND);
-        }
-
-        List <ProductTags> productTagsEntities = productTagsRepository.findByProductId(id);
-
-        if (productTagsEntities.isEmpty()) {
-            throw new ProductNotFoundException(ErrorMessage.PRODUCT_TAGS_NOT_FOUND);
-        }
-
-        ArrayList <ProductsTagDto> productsTags = new ArrayList <ProductsTagDto>();
-        ArrayList <String> productsImages = new ArrayList<>();
+        List <ProductsTagDto> productsTags = new ArrayList <ProductsTagDto>();
+        List <String> productsImages = new ArrayList<>();
 
         for (ProductImages productImage: productImagesEntities) {
             productsImages.add(productImage.getImage());
@@ -75,25 +80,23 @@ public class ProductService {
         }
 
         return new FullProductDto(id,
-                product.getName(),
-                product.getDescription(),
-                product.getPrice(),
+                product.get().getName(),
+                product.get().getDescription(),
+                product.get().getPrice(),
                 productsImages, productsTags);
     }
 
-    public void deleteProduct(long id) throws ProductNotFoundException {
-        Product product = productRepository.findById(id).get();
+    public void deleteProduct(long id) {
+        Optional<Product> product = Optional.ofNullable(productRepository.findById(id).
+                orElseThrow(() -> new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND)));
 
-        if (product == null) {
-            throw new ProductNotFoundException(ErrorMessage.TOKEN_NOT_FOUND);
-        }
-
-        productRepository.delete(product);
+        productRepository.delete(product.get());
     }
 
     public List<ProductInfoDto> getPageProducts(int page) {
-        List<Product> products = productRepository.findByOrderById(PageRequest.of(page, ProductOption.PAGE_COUNT));
-        List<ProductInfoDto> productsDto = new ArrayList<ProductInfoDto>();
+        List<Product> products = productRepository.
+                findByOrderById(PageRequest.of(page, ProductOption.PAGE_COUNT));
+        List<ProductInfoDto> productsDto = new ArrayList<>();
 
         for (Product item : products) {
             productsDto.add(new ProductInfoDto(item.getId(), item.getName(), item.getPrice(), item.getImage()));
@@ -102,13 +105,9 @@ public class ProductService {
         return productsDto;
     }
 
-    public List<ProductInfoDto> searchProductsByNameSortingByParameter(
-            String name,
-            int page,
-            Boolean asc,
-            String parameter
-    ) {
-        List<Product> products = new ArrayList<Product>();
+    public List<ProductInfoDto> searchProductsByNameSortingByParameter(String name, int page, Boolean asc, String parameter) {
+        List<Product> products;
+
         if (asc) {
             products = productRepository.getByNameStartingWith(
                     name,
@@ -120,7 +119,7 @@ public class ProductService {
                     PageRequest.of(page, ProductOption.PAGE_COUNT, Sort.by(parameter).descending())
             );
         }
-        List<ProductInfoDto> productsDto = new ArrayList<ProductInfoDto>();
+        List<ProductInfoDto> productsDto = new ArrayList<>();
 
         for (Product item : products) {
             productsDto.add(new ProductInfoDto(item.getId(), item.getName(), item.getPrice(), item.getImage()));
@@ -129,19 +128,18 @@ public class ProductService {
         return productsDto;
     }
 
-    public long getCountPagesProductsLikeName() {
+    public Long getCountPagesProductsLikeName() {
         return productRepository.count() / ProductOption.PAGE_COUNT;
     }
 
-    public long getCountPagesProductsLikeName(String name) {
+    public Long getCountPagesProductsLikeName(String name) {
 
         return productRepository.countByNameStartingWith(name) / ProductOption.PAGE_COUNT;
     }
 
     public void updateProductById(ProductAllFieldsDto product) {
-        if (productRepository.findByName(product.getName()) != null){
-            throw new ProductAlreadyExistException(ErrorMessage.PRODUCT_WITH_NAME_ALREADY_EXIST);
-        }
+        productRepository.findByName(product.getName()).
+                orElseThrow(() -> new ProductAlreadyExistException(ErrorMessage.PRODUCT_WITH_NAME_ALREADY_EXIST));
 
         productRepository.updateNameAndDescriptionAndPriceById(
                 product.getName(),

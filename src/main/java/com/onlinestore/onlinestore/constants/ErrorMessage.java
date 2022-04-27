@@ -8,9 +8,9 @@ public class ErrorMessage {
     public static final String LOGIN_OR_PASSWORD_INCORRECT = "Login or password are incorrect";
     public static final String UNAUTHORIZED = "Unauthorized";
 
-    public static final String PRODUCT_ALREADY_IN_BASKET = "Product is already in basket";
-    public static final String PRODUCT_NOT_IN_BASKET = "Product not in basket";
-    public static final String BASKET_IS_EMPTY = "Basket is empty";
+    public static final String PRODUCT_ALREADY_IN_CART = "Product is already in basket";
+    public static final String PRODUCT_NOT_IN_CART = "Product not in basket";
+    public static final String CART_IS_EMPTY = "Cart is empty";
 
     public static final String PRODUCT_ALREADY_EXIST = "Product already exist";
     public static final String PRODUCT_NOT_FOUND = "Product not found";

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,24 +46,31 @@ public class FavouritesService {
         return favouritesRepository.save(favouritesEntity);
     }
 
-    public ArrayList<ProductInfoDto> getPageOfProductsFromFavourites(UserIdPageNumberDto user) {
-        List<Favourites> favouritesEntities = favouritesRepository.
-                findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.PAGE_COUNT));
-
-        if (favouritesEntities.isEmpty()) {
-            throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
-        }
+    public ArrayList<ProductInfoDto> getPageOfProductsFromFavourites(UserIdPageNumberDto userIdPageNumberDto) {
+        List<Long> productIds = favouritesRepository.
+                findAllByFavouritesIdUserId(
+                        userIdPageNumberDto.getUserId(),
+                        PageRequest.of(
+                                userIdPageNumberDto.getPageNumber(),
+                                ProductOption.PAGE_COUNT)).
+                stream().map(Favourites::getFavouritesId).map(FavouritesId::getProductId).
+                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
+                    if (result.isEmpty()) {
+                        new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
+                    }
+                    return result;
+                }));
 
         ArrayList <ProductInfoDto> products = new ArrayList<>();
 
-        for (Favourites favouritesEntity: favouritesEntities) {
-            Product productEntity = productRepository.findById(
-                    favouritesEntity.getFavouritesId().getProductId()).get();
+        for (Long productId : productIds) {
+            Product product = productRepository.
+                    findById(productId).get();
             products.add(new ProductInfoDto(
-                    productEntity.getId(),
-                    productEntity.getName(),
-                    productEntity.getPrice(),
-                    productEntity.getImage()));
+                    product.getId(),
+                    product.getName(),
+                    product.getPrice(),
+                    product.getImage()));
         }
 
         return products;
@@ -88,22 +96,26 @@ public class FavouritesService {
     }
 
     public void deleteProductFromFavourites(ProductDeleteFromFavouritesDto productDto) {
-        if (!favouritesRepository.existsByFavouritesId(new FavouritesId(productDto.getUserId(), productDto.getProductId()))) {
+        FavouritesId favouritesId =  new FavouritesId(productDto.getUserId(), productDto.getProductId());
+
+        if (!favouritesRepository.existsByFavouritesId(favouritesId)) {
             throw new ProductNotInFavouritesException(ErrorMessage.PRODUCT_NOT_IN_FAVOURITES);
         }
 
-        Favourites favourites  = new Favourites(new FavouritesId(productDto.getUserId(), productDto.getProductId()));
-
+        Favourites favourites  = new Favourites(favouritesId);
         favouritesRepository.delete(favourites);
     }
 
-    public void clearFavourites(UserFavouritesClearDto user) {
-
-        List<Favourites> favouritesEntities = favouritesRepository.findFavouritesEntityByFavouritesIdUserId(user.getUserId());
-
-        if  (favouritesEntities.isEmpty()) {
-            throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
-        }
+    public void clearFavourites(UserFavouritesClearDto userFavouritesClearDto) {
+        List<Favourites> favouritesEntities = favouritesRepository.
+                findFavouritesEntityByFavouritesIdUserId(userFavouritesClearDto.getUserId()).
+                stream().
+                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
+                    if (result.isEmpty()) {
+                        throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
+                    }
+                    return result;
+                }));
 
         for (Favourites favouritesEntity: favouritesEntities) {
             favouritesRepository.delete(favouritesEntity);

@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,10 +39,10 @@ class ProductServiceTest {
         // given
         productRepository.save(product);
         // when
-        Product actual = productRepository.findByName(product.getName());
+        Optional<Product> actual = productRepository.findByName(product.getName());
 
         // then
-        assertEquals(product, actual);
+        assertEquals(product, actual.get());
     }
 
     @Test

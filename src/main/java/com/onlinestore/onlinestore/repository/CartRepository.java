@@ -12,6 +12,6 @@ import java.util.List;
 public interface CartRepository extends CrudRepository<Cart, Long> {
     boolean existsByCartId(CartId cartId);
     List<Cart> findAllByCartIdUserId(Long id, Pageable pageable);
-    List<Cart> findBasketEntityByCartIdUserId(Long id);
+    List<Cart> findByCartIdUserId(Long id);
     Long countByCartIdUserId(Long id);
 }

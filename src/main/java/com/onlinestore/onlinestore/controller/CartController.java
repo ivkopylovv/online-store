@@ -2,9 +2,9 @@ package com.onlinestore.onlinestore.controller;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.SuccessMessage;
-import com.onlinestore.onlinestore.dto.request.ProductAddToBasketDto;
-import com.onlinestore.onlinestore.dto.request.ProductDeleteFromBasketDto;
-import com.onlinestore.onlinestore.dto.request.UserBasketClearDto;
+import com.onlinestore.onlinestore.dto.request.ProductAddToCartDto;
+import com.onlinestore.onlinestore.dto.request.ProductDeleteFromCart;
+import com.onlinestore.onlinestore.dto.request.UserCartClearDto;
 import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
 import com.onlinestore.onlinestore.dto.response.CountDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
@@ -26,9 +26,9 @@ public class CartController {
     private final CartService cartService;
 
     @PostMapping(value = "/add-product")
-    public ResponseEntity addProductInBasket(@RequestBody ProductAddToBasketDto productAddToBasketDto) {
+    public ResponseEntity addProductInBasket(@RequestBody ProductAddToCartDto productAddToCartDto) {
         try {
-            Long count = cartService.addProductToBasket(productAddToBasketDto);
+            Long count = cartService.addProductToCart(productAddToCartDto);
 
             return new ResponseEntity(
                     new CountDto(count),
@@ -49,11 +49,11 @@ public class CartController {
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
-        } catch (ProductAlreadyInBasketException e) {
+        } catch (ProductAlreadyInCartException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_ALREADY_IN_BASKET),
+                    new ErrorMessageDto(ErrorMessage.PRODUCT_ALREADY_IN_CART),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -74,11 +74,11 @@ public class CartController {
                     cartService.getPageOfProductsFromBasket(user),
                     HttpStatus.OK
             );
-        } catch (BasketIsEmptyException e) {
+        } catch (CartIsEmptyException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.BASKET_IS_EMPTY),
+                    new ErrorMessageDto(ErrorMessage.CART_IS_EMPTY),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -92,19 +92,19 @@ public class CartController {
     }
 
     @PostMapping(value = "/delete-product")
-    public ResponseEntity deleteProductFromBasket(@RequestBody ProductDeleteFromBasketDto productDeleteFromBasketDto) {
+    public ResponseEntity deleteProductFromBasket(@RequestBody ProductDeleteFromCart productDeleteFromCart) {
         try {
-            Long count = cartService.deleteProductFromBasket(productDeleteFromBasketDto);
+            Long count = cartService.deleteProductFromBasket(productDeleteFromCart);
 
             return new ResponseEntity(
                     new CountDto(count),
                     HttpStatus.OK
             );
-        } catch (ProductNotInBasketException e) {
+        } catch (ProductNotInCartException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_IN_BASKET),
+                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_IN_CART),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -118,19 +118,19 @@ public class CartController {
     }
 
     @PostMapping(value = "/clear-basket")
-    public ResponseEntity clearBasket(@RequestBody UserBasketClearDto userBasketClearDto) {
+    public ResponseEntity clearBasket(@RequestBody UserCartClearDto userCartClearDto) {
         try {
-            cartService.clearBasket(userBasketClearDto);
+            cartService.clearBasket(userCartClearDto);
 
             return new ResponseEntity(
-                    new SuccessMessageDto(SuccessMessage.BASKET_IS_EMPTIED),
+                    new SuccessMessageDto(SuccessMessage.CART_IS_EMPTIED),
                     HttpStatus.OK
             );
-        } catch (BasketIsEmptyException e) {
+        } catch (CartIsEmptyException e) {
             e.printStackTrace();
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.BASKET_IS_EMPTY),
+                    new ErrorMessageDto(ErrorMessage.CART_IS_EMPTY),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {

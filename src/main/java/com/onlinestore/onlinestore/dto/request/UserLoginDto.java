@@ -1,18 +1,16 @@
 package com.onlinestore.onlinestore.dto.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class UserLoginDto {
     private String username;
     private String password;
 
-    public UserLoginDto(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-
-    public String getLogin() {
-        return username;
-    }
-    public String getPassword() {
-        return password;
-    }
 }

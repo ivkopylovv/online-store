@@ -1,30 +1,16 @@
 package com.onlinestore.onlinestore.dto.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class UserIdPageNumberDto {
     private Long userId;
     private int pageNumber;
 
-    public UserIdPageNumberDto() {
-    }
-
-    public UserIdPageNumberDto(Long userId, int pageNumber) {
-        this.userId = userId;
-        this.pageNumber = pageNumber;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public int getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
 }

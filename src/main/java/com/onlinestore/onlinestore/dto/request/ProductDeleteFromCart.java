@@ -1,4 +1,4 @@
-package com.onlinestore.onlinestore.dto.response;
+package com.onlinestore.onlinestore.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProductsTagDto {
-    private String type;
-    private String value;
-
+public class ProductDeleteFromCart {
+    private Long userId;
+    private Long productId;
 }

@@ -1,5 +1,5 @@
 package com.onlinestore.onlinestore.repository;
-/*
+
 import com.onlinestore.onlinestore.embeddable.CartId;
 import com.onlinestore.onlinestore.entity.Cart;
 import org.junit.jupiter.api.AfterEach;
@@ -17,14 +17,14 @@ import static org.junit.Assert.assertEquals;
 class CartRepositoryTest {
 
     @Autowired
-    private BasketRepository basketRepository;
+    private CartRepository cartRepository;
 
     private Cart cart;
     private CartId cartId;
 
     @AfterEach
     void tearDown() {
-        basketRepository.deleteAll();
+        cartRepository.deleteAll();
     }
 
     @BeforeEach
@@ -36,10 +36,10 @@ class CartRepositoryTest {
     @Test
     void itShouldCheckThatBasketExistsEntityByBasketId() {
         // given
-        basketRepository.save(cart);
+        cartRepository.save(cart);
 
         // when
-        boolean actual = basketRepository.existsByBasketId(cartId);
+        boolean actual = cartRepository.existsByCartId(cartId);
 
         // then
         assertEquals(true, actual);
@@ -48,12 +48,12 @@ class CartRepositoryTest {
     @Test
     void itShouldFindAllEntitiesByBasketIdUserId() {
         // given
-        basketRepository.save(cart);
+        cartRepository.save(cart);
         List<Cart> excepted = new ArrayList<Cart>();
 
         // when
-        List <Cart> actual = basketRepository.
-                findBasketEntityByBasketIdUserId(Long.valueOf(3));
+        List <Cart> actual = cartRepository.
+                findByCartIdUserId(Long.valueOf(3));
 
         // then
         assertEquals(excepted, actual);
@@ -62,13 +62,13 @@ class CartRepositoryTest {
     @Test
     void itShouldReturnCountByBasketIdUserId() {
         // given
-        basketRepository.save(cart);
+        cartRepository.save(cart);
         CartId secondCartId = new CartId(Long.valueOf(2), Long.valueOf(2));
         Cart secondCart = new Cart(secondCartId);
-        basketRepository.save(secondCart);
+        cartRepository.save(secondCart);
 
         // when
-        Long actual = basketRepository.countByBasketIdUserId(Long.valueOf(2));
+        Long actual = cartRepository.countByCartIdUserId(Long.valueOf(2));
 
         // then
         assertEquals(Long.valueOf(1), actual);

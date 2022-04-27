@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,10 +42,10 @@ class ProductRepositoryTest {
         productRepository.save(product);
 
         // when
-        Product actual = productRepository.findByName(product.getName());
+        Optional<Product> actual = productRepository.findByName(product.getName());
 
         // then
-        assertEquals(product, actual);
+        assertEquals(product, actual.get());
     }
 
     @Test
@@ -125,9 +126,9 @@ class ProductRepositoryTest {
                         secondProduct.getPrice(),
                         Long.valueOf(8)
                 );
-        Product actual = productRepository.findByName("name2");
+        Optional<Product> actual = productRepository.findByName("name2");
 
         // then
-        assertEquals(product.getId(), actual.getId());
+        assertEquals(product.getId(), actual.get().getId());
     }
 }

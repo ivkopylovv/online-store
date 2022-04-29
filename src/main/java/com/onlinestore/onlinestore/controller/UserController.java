@@ -10,6 +10,7 @@ import com.onlinestore.onlinestore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,6 +63,25 @@ public class UserController {
             }
         } else {
             throw new RuntimeException(ErrorMessage.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity logout() {
+        try {
+            SecurityContextHolder.getContext().setAuthentication(null);
+
+            return new ResponseEntity(
+                    new SuccessMessageDto(SuccessMessage.USER_LOGGED_OUT),
+                    HttpStatus.OK
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

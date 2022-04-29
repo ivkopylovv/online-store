@@ -45,5 +45,13 @@ public class TokenHelper {
                 .sign(getToken());
     }
 
+    public static String getRefreshToken(com.onlinestore.onlinestore.entity.User user, HttpServletRequest request) {
+        return JWT.create()
+                .withSubject(user.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + TokenOption.REFRESH_TOKEN_TIME_ALIVE))
+                .withIssuer(request.getRequestURL().toString())
+                .sign(getToken());
+    }
+
 
 }

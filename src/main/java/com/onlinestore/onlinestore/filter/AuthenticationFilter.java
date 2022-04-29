@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @RequiredArgsConstructor
@@ -43,11 +44,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         User user = (User) authentication.getPrincipal();
         String access_token = TokenHelper.getAccessToken(user, request);
         String refresh_token = TokenHelper.getRefreshToken(user, request);
-
-        response.setHeader("access_token", access_token);
-        response.setHeader("refresh_token", refresh_token);
-        response.setContentType(APPLICATION_JSON_VALUE);
-
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
         tokens.put("refresh_token", refresh_token);
@@ -58,7 +54,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         SecurityContextHolder.clearContext();
+        response.setStatus(FORBIDDEN.value());
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), new ErrorMessageDto(ErrorMessage.LOGIN_OR_PASSWORD_INCORRECT));
     }
+
+
 }

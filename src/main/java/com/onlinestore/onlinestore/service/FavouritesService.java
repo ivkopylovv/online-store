@@ -78,11 +78,14 @@ public class FavouritesService {
 
     public ArrayList<ProductIdDto> getPageOfProductsIdFromFavourites(UserIdPageNumberDto user) {
         List<Favourites> favouritesEntities = favouritesRepository.
-                findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.PAGE_COUNT));
-
-        if (favouritesEntities.isEmpty()) {
-            throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
-        }
+                findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.PAGE_COUNT)).
+                stream().
+                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
+                    if (result.isEmpty()) {
+                        new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
+                    }
+                    return result;
+                }));
 
         ArrayList <ProductIdDto> products = new ArrayList<>();
 

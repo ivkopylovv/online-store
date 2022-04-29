@@ -11,6 +11,7 @@ import com.onlinestore.onlinestore.entity.ProductImages;
 import com.onlinestore.onlinestore.entity.ProductTags;
 import com.onlinestore.onlinestore.exception.ProductAlreadyExistException;
 import com.onlinestore.onlinestore.exception.ProductNotFoundException;
+import com.onlinestore.onlinestore.exception.UserAlreadyExistException;
 import com.onlinestore.onlinestore.repository.ProductImagesRepository;
 import com.onlinestore.onlinestore.repository.ProductRepository;
 import com.onlinestore.onlinestore.repository.ProductTagsRepository;
@@ -33,7 +34,9 @@ public class ProductService {
 
     public void addProduct(ProductAllFieldsDto product) {
         productRepository.findByName(product.getName()).
-                orElseThrow(() -> new ProductAlreadyExistException(ErrorMessage.PRODUCT_ALREADY_EXIST));
+                ifPresent(result -> {
+                    throw new ProductAlreadyExistException(ErrorMessage.PRODUCT_ALREADY_EXIST);
+                });
 
         Product newProduct = new Product(
                 product.getName(),
@@ -139,7 +142,9 @@ public class ProductService {
 
     public void updateProductById(ProductAllFieldsDto product) {
         productRepository.findByName(product.getName()).
-                orElseThrow(() -> new ProductAlreadyExistException(ErrorMessage.PRODUCT_WITH_NAME_ALREADY_EXIST));
+                ifPresent(result -> {
+                    throw new ProductAlreadyExistException(ErrorMessage.PRODUCT_WITH_NAME_ALREADY_EXIST);
+                });
 
         productRepository.updateNameAndDescriptionAndPriceById(
                 product.getName(),

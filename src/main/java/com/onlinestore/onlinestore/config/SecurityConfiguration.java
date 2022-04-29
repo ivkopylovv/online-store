@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -38,7 +40,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 authorizeRequests().antMatchers(
                         "/api/login/**",
                         "/api/token/refresh/**",
-                        "/api/registration/**").permitAll().
+                        "/api/registration/**",
+                        "/api/logout/**").permitAll().
                 and().
                 authorizeRequests().antMatchers(
                         "api/products/add-product/**",
@@ -46,11 +49,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "api/products/delete-product/**").hasAnyAuthority("ROLE_ADMIN").
                 and().
                 authorizeRequests().antMatchers(
-                        "api/products/get-product/**",
-                        "api/products/get-page/**",
                         "api/products/count-page/**",
                         "api/favourites/**",
                         "api/cart/**").hasAnyAuthority( "ROLE_USER").
+                and().
+                authorizeRequests().antMatchers(
+                        "api/products/get-product/**",
+                        "api/products/get-page/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN").
                 and().
                 authorizeRequests().anyRequest().authenticated().
                 and().

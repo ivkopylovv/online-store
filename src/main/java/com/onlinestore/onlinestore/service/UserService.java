@@ -41,7 +41,9 @@ public class UserService implements UserDetailsService {
 
     public void registerUser(UserRegistrationDto userDto) {
         userRepository.findByLogin(userDto.getLogin()).
-                orElseThrow(() -> new UserAlreadyExistException(ErrorMessage.USER_EXISTS));
+                ifPresent(result -> {
+                    throw new UserAlreadyExistException(ErrorMessage.USER_EXISTS);
+                });
 
         User user = new User(
                 userDto.getUsername(),
@@ -80,9 +82,10 @@ public class UserService implements UserDetailsService {
         String login = decodedJWT.getSubject();
         User user = getUser(login);
         String access_token = TokenHelper.getAccessToken(user, request);
+        String new_refresh_token = TokenHelper.getRefreshToken(user, request);
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
-        tokens.put("refresh_token", refresh_token);
+        tokens.put("refresh_token", new_refresh_token);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }

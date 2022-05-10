@@ -7,7 +7,6 @@ import com.onlinestore.onlinestore.dto.request.ProductDeleteFromCart;
 import com.onlinestore.onlinestore.dto.request.UserCartClearDto;
 import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
 import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
-import com.onlinestore.onlinestore.entity.Product;
 import com.onlinestore.onlinestore.embeddable.CartId;
 import com.onlinestore.onlinestore.entity.Cart;
 import com.onlinestore.onlinestore.exception.*;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +46,7 @@ public class CartService {
         return cartRepository.countByCartIdUserId(productAddToCartDto.getUserId());
     }
 
-    public List<ProductInfoDto> getPageOfProductsFromBasket(UserIdPageNumberDto userIdPageNumberDto) {
+    public List<ProductInfoDto> getCartProductsPage(UserIdPageNumberDto userIdPageNumberDto) {
             List<Long> productIds = cartRepository.
                 findAllByCartIdUserId(
                         userIdPageNumberDto.getUserId(),
@@ -63,22 +61,20 @@ public class CartService {
                             return result;
                 }));
 
-        List<ProductInfoDto> products = new ArrayList<>();
-
-        for (Long productId : productIds) {
-            Product product = productRepository.
-                    findById(productId).get();
-            products.add(new ProductInfoDto(
-                    product.getId(),
-                    product.getName(),
-                    product.getPrice(),
-                    product.getImage()));
-        }
+        List<ProductInfoDto> products = productIds.
+                stream().map(productId ->
+                        productRepository.findById(productId).get()).
+                map(product -> new ProductInfoDto(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getImage())).
+                collect(Collectors.toList());
 
         return products;
     }
 
-    public Long deleteProductFromBasket(ProductDeleteFromCart product) {
+    public Long deleteProductFromCart(ProductDeleteFromCart product) {
         CartId cartId = new CartId(product.getUserId(), product.getProductId());
 
         if (!cartRepository.existsByCartId(cartId)) {
@@ -91,7 +87,7 @@ public class CartService {
         return cartRepository.countByCartIdUserId(product.getUserId());
     }
 
-    public void clearBasket(UserCartClearDto userCartClearDto) {
+    public void clearCart(UserCartClearDto userCartClearDto) {
         List<Cart> cartEntities = cartRepository.
                 findByCartIdUserId(userCartClearDto.getUserId()).
                 stream().

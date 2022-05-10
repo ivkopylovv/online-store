@@ -1,17 +1,17 @@
 package com.onlinestore.onlinestore.service;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.dto.request.UserRegistrationDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.entity.Role;
 import com.onlinestore.onlinestore.entity.User;
+import com.onlinestore.onlinestore.exception.TokenNotFoundException;
 import com.onlinestore.onlinestore.exception.UserAlreadyExistException;
+import com.onlinestore.onlinestore.exception.UserNotFoundException;
+import com.onlinestore.onlinestore.repository.TokenRepository;
 import com.onlinestore.onlinestore.repository.UserRepository;
+import com.onlinestore.onlinestore.utility.DateHelper;
 import com.onlinestore.onlinestore.utility.TokenHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -28,9 +28,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Service
@@ -38,6 +40,8 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final TokenRepository tokenRepository;
+    private final TokenService tokenService;
 
     public void registerUser(UserRegistrationDto userDto) {
         userRepository.findByLogin(userDto.getLogin()).
@@ -66,23 +70,52 @@ public class UserService implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         });
 
-        return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(
+                user.getLogin(),
+                user.getPassword(),
+                authorities
+        );
     }
 
     public User getUser(String login) {
         return userRepository.findByLogin(login).
-                orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND));
+                orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND));
+    }
+
+    public void logoutUser(String authorizationHeader) {
+        String refresh_token = authorizationHeader.substring("Bearer ".length());
+        String login = TokenHelper.getUserLoginByToken(refresh_token);
+        User user = getUser(login);
+
+        user.setToken(null);
+        userRepository.save(user);
+        tokenRepository.delete(tokenRepository.findByToken(refresh_token).get());
+    }
+
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+
+        if (TokenHelper.isAuthorizationHeaderValid(authorizationHeader)) {
+            successfulRefresh(request, response, authorizationHeader);
+        } else {
+            throw new TokenNotFoundException(ErrorMessage.UNAUTHORIZED);
+        }
     }
 
     public void successfulRefresh(HttpServletRequest request, HttpServletResponse response, String authorizationHeader) throws IOException {
-        String refresh_token = authorizationHeader.substring("Bearer ".length());
-        Algorithm algorithm = TokenHelper.getToken();
-        JWTVerifier verifier = JWT.require(algorithm).build();
-        DecodedJWT decodedJWT = verifier.verify(refresh_token);
-        String login = decodedJWT.getSubject();
+        String refresh_token = TokenHelper.getTokenByAuthorizationHeader(authorizationHeader);
+        String login = TokenHelper.getUserLoginByToken(refresh_token);
         User user = getUser(login);
+        Date expiredInDate = tokenRepository.findByToken(refresh_token).get().getExpiredInDate();
+
+        if (expiredInDate.before(DateHelper.getCurrentDate())) {
+            throw new TokenNotFoundException(ErrorMessage.TOKEN_NOT_FOUND);
+        }
+
         String access_token = TokenHelper.getAccessToken(user, request);
         String new_refresh_token = TokenHelper.getRefreshToken(user, request);
+        tokenService.saveRefreshToken(login, new_refresh_token);
+
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
         tokens.put("refresh_token", new_refresh_token);

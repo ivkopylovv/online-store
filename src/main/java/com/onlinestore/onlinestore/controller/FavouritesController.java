@@ -63,11 +63,11 @@ public class FavouritesController {
     }
 
     @PostMapping(value = "/get-products")
-    public ResponseEntity getPageOfProductsFromFavourites(@RequestBody UserIdPageNumberDto user) {
+    public ResponseEntity getFavouritesProductsPage(@RequestBody UserIdPageNumberDto user) {
         try {
 
             return new ResponseEntity(
-                    favouritesService.getPageOfProductsFromFavourites(user),
+                    favouritesService.getFavouritesProductsPage(user),
                     HttpStatus.OK
             );
         } catch (FavouritesIsEmptyException e) {
@@ -88,11 +88,11 @@ public class FavouritesController {
     }
 
     @PostMapping(value = "/get-products-id")
-    public ResponseEntity getPageOfProductsIdFromFavourites(@RequestBody UserIdPageNumberDto user) {
+    public ResponseEntity getFavouritesProductsIdPage(@RequestBody UserIdPageNumberDto user) {
         try {
 
             return new ResponseEntity(
-                    favouritesService.getPageOfProductsIdFromFavourites(user),
+                    favouritesService.getFavouritesProductsIdPage(user),
                     HttpStatus.OK
             );
         } catch (FavouritesIsEmptyException e) {

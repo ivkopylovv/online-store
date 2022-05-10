@@ -155,7 +155,7 @@ public class ProductController {
 
 
     @GetMapping(value = "/get-page", params = {"name", "page"})
-    public ResponseEntity getSearchProductsPage(@RequestParam String name, @RequestParam int page) {
+    public ResponseEntity getProductsPage(@RequestParam String name, @RequestParam int page) {
         try {
             return new ResponseEntity(
                     productService.searchProductsByNameSortingByParameter(name, page, true, "name"),
@@ -172,7 +172,7 @@ public class ProductController {
     }
 
     @GetMapping(value = "/get-page", params = {"name", "page", "asc"})
-    public ResponseEntity getSearchProductsPage(@RequestParam String name,
+    public ResponseEntity getProductsPage(@RequestParam String name,
                                                 @RequestParam int page,
                                                 @RequestParam Boolean asc) {
         try {
@@ -191,7 +191,7 @@ public class ProductController {
     }
 
     @GetMapping(value = "/get-page", params = {"name", "page", "asc", "sorting"})
-    public ResponseEntity getSearchProductsPage(@RequestParam String name,
+    public ResponseEntity getProductsPage(@RequestParam String name,
                                                 @RequestParam int page,
                                                 @RequestParam Boolean asc,
                                                 @RequestParam String sorting) {
@@ -211,7 +211,7 @@ public class ProductController {
     }
 
     @GetMapping(value = "/count-page")
-    public ResponseEntity getCountProducts() {
+    public ResponseEntity getProductsCount() {
         try {
             return new ResponseEntity(
                     new CountDto(productService.getCountPagesProductsLikeName()),
@@ -228,7 +228,7 @@ public class ProductController {
     }
 
     @GetMapping(value = "/count-page", params = {"name"})
-    public ResponseEntity getCountProducts(@RequestParam String name) {
+    public ResponseEntity getProductsCount(@RequestParam String name) {
         try {
             return new ResponseEntity(
                     new CountDto(productService.getCountPagesProductsLikeName(name)),

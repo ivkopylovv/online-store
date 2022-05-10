@@ -14,10 +14,7 @@ import com.onlinestore.onlinestore.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/cart")
@@ -26,7 +23,7 @@ public class CartController {
     private final CartService cartService;
 
     @PostMapping(value = "/add-product")
-    public ResponseEntity addProductInBasket(@RequestBody ProductAddToCartDto productAddToCartDto) {
+    public ResponseEntity addProductToCart(@RequestBody ProductAddToCartDto productAddToCartDto) {
         try {
             Long count = cartService.addProductToCart(productAddToCartDto);
 
@@ -67,11 +64,11 @@ public class CartController {
     }
 
     @PostMapping(value = "/get-products")
-    public ResponseEntity getPageOfProductsFromBasket(@RequestBody UserIdPageNumberDto user) {
+    public ResponseEntity getCartProductsPage(@RequestBody UserIdPageNumberDto user) {
         try {
 
             return new ResponseEntity(
-                    cartService.getPageOfProductsFromBasket(user),
+                    cartService.getCartProductsPage(user),
                     HttpStatus.OK
             );
         } catch (CartIsEmptyException e) {
@@ -91,10 +88,10 @@ public class CartController {
         }
     }
 
-    @PostMapping(value = "/delete-product")
-    public ResponseEntity deleteProductFromBasket(@RequestBody ProductDeleteFromCart productDeleteFromCart) {
+    @DeleteMapping(value = "/delete-product")
+    public ResponseEntity deleteProductFromCart(@RequestBody ProductDeleteFromCart productDeleteFromCart) {
         try {
-            Long count = cartService.deleteProductFromBasket(productDeleteFromCart);
+            Long count = cartService.deleteProductFromCart(productDeleteFromCart);
 
             return new ResponseEntity(
                     new CountDto(count),
@@ -117,10 +114,10 @@ public class CartController {
         }
     }
 
-    @PostMapping(value = "/clear-basket")
-    public ResponseEntity clearBasket(@RequestBody UserCartClearDto userCartClearDto) {
+    @PostMapping(value = "/clear-cart")
+    public ResponseEntity clearCart(@RequestBody UserCartClearDto userCartClearDto) {
         try {
-            cartService.clearBasket(userCartClearDto);
+            cartService.clearCart(userCartClearDto);
 
             return new ResponseEntity(
                     new SuccessMessageDto(SuccessMessage.CART_IS_EMPTIED),

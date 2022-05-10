@@ -10,7 +10,6 @@ import com.onlinestore.onlinestore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,26 +53,30 @@ public class UserController {
 
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            try {
-                userService.successfulRefresh(request, response, authorizationHeader);
-            } catch (Exception e) {
-                userService.unsuccessfulRefresh(response, e);
-            }
-        } else {
-            throw new RuntimeException(ErrorMessage.UNAUTHORIZED);
+        try {
+            userService.refreshToken(request, response);
+        } catch (TokenNotFoundException e) {
+            userService.unsuccessfulRefresh(response, e);
+        } catch (Exception e) {
+            userService.unsuccessfulRefresh(response, e);
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout() {
+    public ResponseEntity logout(HttpServletRequest request) {
         try {
-            SecurityContextHolder.getContext().setAuthentication(null);
+           userService.logoutUser(request.getHeader(AUTHORIZATION));
 
             return new ResponseEntity(
                     new SuccessMessageDto(SuccessMessage.USER_LOGGED_OUT),
                     HttpStatus.OK
+            );
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+
+            return new ResponseEntity(
+                    new ErrorMessageDto(ErrorMessage.USER_NOT_FOUND),
+                    HttpStatus.INTERNAL_SERVER_ERROR
             );
         } catch (RuntimeException e) {
             e.printStackTrace();

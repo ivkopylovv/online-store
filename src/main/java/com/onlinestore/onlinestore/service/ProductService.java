@@ -11,7 +11,6 @@ import com.onlinestore.onlinestore.entity.ProductImages;
 import com.onlinestore.onlinestore.entity.ProductTags;
 import com.onlinestore.onlinestore.exception.ProductAlreadyExistException;
 import com.onlinestore.onlinestore.exception.ProductNotFoundException;
-import com.onlinestore.onlinestore.exception.UserAlreadyExistException;
 import com.onlinestore.onlinestore.repository.ProductImagesRepository;
 import com.onlinestore.onlinestore.repository.ProductRepository;
 import com.onlinestore.onlinestore.repository.ProductTagsRepository;
@@ -20,7 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,9 +49,10 @@ public class ProductService {
         Optional<Product> product = Optional.ofNullable(productRepository.findById(id).
                 orElseThrow(() -> new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND)));
 
-        List <ProductImages> productImagesEntities = productImagesRepository.
+        List <String> productsImages = productImagesRepository.
                 findByProductId(id).
                 stream().
+                map(productsImage -> productsImage.getImage()).
                 collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
                     if (result.isEmpty()) {
                         throw new ProductNotFoundException(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND);
@@ -61,32 +60,24 @@ public class ProductService {
                     return result;
                 }));
 
-        List <ProductTags> productTagsEntities = productTagsRepository.
+        List <ProductsTagDto> productsTags = productTagsRepository.
                 findByProductId(id).
                 stream().
+                map(productTag -> new ProductsTagDto(productTag.getType(), productTag.getValue())).
                 collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
                     if (result.isEmpty()) {
                         throw new ProductNotFoundException(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND);
                     }
                     return result;
                 }));
-
-        List <ProductsTagDto> productsTags = new ArrayList <ProductsTagDto>();
-        List <String> productsImages = new ArrayList<>();
-
-        for (ProductImages productImage: productImagesEntities) {
-            productsImages.add(productImage.getImage());
-        }
-
-        for (ProductTags productTag: productTagsEntities) {
-            productsTags.add(new ProductsTagDto(productTag.getType(), productTag.getValue()));
-        }
 
         return new FullProductDto(id,
                 product.get().getName(),
                 product.get().getDescription(),
                 product.get().getPrice(),
-                productsImages, productsTags);
+                productsImages,
+                productsTags
+        );
     }
 
     public void deleteProduct(long id) {
@@ -97,38 +88,33 @@ public class ProductService {
     }
 
     public List<ProductInfoDto> getPageProducts(int page) {
-        List<Product> products = productRepository.
-                findByOrderById(PageRequest.of(page, ProductOption.PAGE_COUNT));
-        List<ProductInfoDto> productsDto = new ArrayList<>();
 
-        for (Product item : products) {
-            productsDto.add(new ProductInfoDto(item.getId(), item.getName(), item.getPrice(), item.getImage()));
-        }
-
-        return productsDto;
+        return productRepository.
+                findByOrderById(PageRequest.of(page, ProductOption.PAGE_COUNT)).
+                stream().
+                map(product -> new ProductInfoDto(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getImage())).
+                collect(Collectors.toList());
     }
 
     public List<ProductInfoDto> searchProductsByNameSortingByParameter(String name, int page, Boolean asc, String parameter) {
-        List<Product> products;
 
-        if (asc) {
-            products = productRepository.getByNameStartingWith(
-                    name,
-                    PageRequest.of(page, ProductOption.PAGE_COUNT, Sort.by(parameter).ascending())
-            );
-        } else {
-            products = productRepository.getByNameStartingWith(
-                    name,
-                    PageRequest.of(page, ProductOption.PAGE_COUNT, Sort.by(parameter).descending())
-            );
-        }
-        List<ProductInfoDto> productsDto = new ArrayList<>();
-
-        for (Product item : products) {
-            productsDto.add(new ProductInfoDto(item.getId(), item.getName(), item.getPrice(), item.getImage()));
-        }
-
-        return productsDto;
+        return productRepository.
+                getByNameStartingWith(
+                        name,
+                        PageRequest.of(page, ProductOption.PAGE_COUNT,
+                                asc ? Sort.by(parameter).ascending() : Sort.by(parameter).descending())).
+                stream().map(product ->
+                        new ProductInfoDto(
+                                product.getId(),
+                                product.getName(),
+                                product.getPrice(),
+                                product.getImage())).
+                collect(Collectors.toList()
+                );
     }
 
     public Long getCountPagesProductsLikeName() {
@@ -136,7 +122,6 @@ public class ProductService {
     }
 
     public Long getCountPagesProductsLikeName(String name) {
-
         return productRepository.countByNameStartingWith(name) / ProductOption.PAGE_COUNT;
     }
 

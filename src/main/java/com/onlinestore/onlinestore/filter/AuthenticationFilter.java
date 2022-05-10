@@ -3,6 +3,7 @@ package com.onlinestore.onlinestore.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
+import com.onlinestore.onlinestore.service.TokenService;
 import com.onlinestore.onlinestore.utility.TokenHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -44,6 +46,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         User user = (User) authentication.getPrincipal();
         String access_token = TokenHelper.getAccessToken(user, request);
         String refresh_token = TokenHelper.getRefreshToken(user, request);
+        tokenService.saveRefreshToken(user.getUsername(), refresh_token);
+
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
         tokens.put("refresh_token", refresh_token);

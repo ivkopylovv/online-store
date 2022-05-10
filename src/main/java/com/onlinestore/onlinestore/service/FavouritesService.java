@@ -7,7 +7,6 @@ import com.onlinestore.onlinestore.dto.response.ProductIdDto;
 import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
 import com.onlinestore.onlinestore.embeddable.FavouritesId;
 import com.onlinestore.onlinestore.entity.Favourites;
-import com.onlinestore.onlinestore.entity.Product;
 import com.onlinestore.onlinestore.exception.*;
 import com.onlinestore.onlinestore.repository.FavouritesRepository;
 import com.onlinestore.onlinestore.repository.ProductRepository;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +44,7 @@ public class FavouritesService {
         return favouritesRepository.save(favouritesEntity);
     }
 
-    public ArrayList<ProductInfoDto> getPageOfProductsFromFavourites(UserIdPageNumberDto userIdPageNumberDto) {
+    public List<ProductInfoDto> getFavouritesProductsPage(UserIdPageNumberDto userIdPageNumberDto) {
         List<Long> productIds = favouritesRepository.
                 findAllByFavouritesIdUserId(
                         userIdPageNumberDto.getUserId(),
@@ -61,22 +59,21 @@ public class FavouritesService {
                     return result;
                 }));
 
-        ArrayList <ProductInfoDto> products = new ArrayList<>();
+        List<ProductInfoDto> products = productIds.
+                stream().map(productId ->
+                        productRepository.findById(productId).get()).
+                map(product -> new ProductInfoDto(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getImage())).
+                collect(Collectors.toList());
 
-        for (Long productId : productIds) {
-            Product product = productRepository.
-                    findById(productId).get();
-            products.add(new ProductInfoDto(
-                    product.getId(),
-                    product.getName(),
-                    product.getPrice(),
-                    product.getImage()));
-        }
 
         return products;
     }
 
-    public ArrayList<ProductIdDto> getPageOfProductsIdFromFavourites(UserIdPageNumberDto user) {
+    public List<ProductIdDto> getFavouritesProductsIdPage(UserIdPageNumberDto user) {
         List<Favourites> favouritesEntities = favouritesRepository.
                 findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.PAGE_COUNT)).
                 stream().
@@ -87,25 +84,27 @@ public class FavouritesService {
                     return result;
                 }));
 
-        ArrayList <ProductIdDto> products = new ArrayList<>();
-
-        for (Favourites favouritesEntity: favouritesEntities) {
-            Product productEntity = productRepository.findById(
-                    favouritesEntity.getFavouritesId().getProductId()).get();
-            products.add(new ProductIdDto(productEntity.getId()));
-        }
+        List<ProductIdDto> products = favouritesEntities.
+                stream().map(favourites ->
+                        new ProductIdDto(productRepository.findById(favourites.
+                                        getFavouritesId().
+                                        getProductId()).
+                                get().
+                                getId())).
+                collect(Collectors.toList()
+                );
 
         return products;
     }
 
     public void deleteProductFromFavourites(ProductDeleteFromFavouritesDto productDto) {
-        FavouritesId favouritesId =  new FavouritesId(productDto.getUserId(), productDto.getProductId());
+        FavouritesId favouritesId = new FavouritesId(productDto.getUserId(), productDto.getProductId());
 
         if (!favouritesRepository.existsByFavouritesId(favouritesId)) {
             throw new ProductNotInFavouritesException(ErrorMessage.PRODUCT_NOT_IN_FAVOURITES);
         }
 
-        Favourites favourites  = new Favourites(favouritesId);
+        Favourites favourites = new Favourites(favouritesId);
         favouritesRepository.delete(favourites);
     }
 
@@ -120,8 +119,8 @@ public class FavouritesService {
                     return result;
                 }));
 
-        for (Favourites favouritesEntity: favouritesEntities) {
-            favouritesRepository.delete(favouritesEntity);
-        }
+        favouritesEntities.stream().
+                forEach(favouritesEntity ->
+                        favouritesRepository.delete(favouritesEntity));
     }
 }

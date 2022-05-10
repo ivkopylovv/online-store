@@ -2,6 +2,7 @@ package com.onlinestore.onlinestore.config;
 
 import com.onlinestore.onlinestore.filter.AuthenticationFilter;
 import com.onlinestore.onlinestore.filter.AuthorizationFilter;
+import com.onlinestore.onlinestore.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -23,6 +23,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final TokenService tokenService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -31,7 +32,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManagerBean());
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManagerBean(), tokenService);
         authenticationFilter.setFilterProcessesUrl("/api/login");
 
         http.csrf().disable().
@@ -41,27 +42,24 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/login/**",
                         "/api/token/refresh/**",
                         "/api/registration/**",
-                        "/api/logout/**").permitAll().
+                        "/api/logout/**",
+                        "/api/products/get-product/**",
+                        "/api/products/get-page/**",
+                        "/api/products/count-page/**").permitAll().
                 and().
                 authorizeRequests().antMatchers(
-                        "api/products/add-product/**",
-                        "api/products/update-product/**",
-                        "api/products/delete-product/**").hasAnyAuthority("ROLE_ADMIN").
+                        "/api/products/add-product/**",
+                        "/api/products/update-product/**",
+                        "/api/products/delete-product/**").hasAnyAuthority("ROLE_ADMIN").
                 and().
                 authorizeRequests().antMatchers(
-                        "api/products/count-page/**",
-                        "api/favourites/**",
-                        "api/cart/**").hasAnyAuthority( "ROLE_USER").
-                and().
-                authorizeRequests().antMatchers(
-                        "api/products/get-product/**",
-                        "api/products/get-page/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN").
+                        "/api/favourites/**",
+                        "/api/cart/**").hasAnyAuthority( "ROLE_USER").
                 and().
                 authorizeRequests().anyRequest().authenticated().
                 and().
                 addFilter(authenticationFilter).
                 addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-
     }
 
     @Bean

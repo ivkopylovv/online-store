@@ -1,11 +1,16 @@
 package com.onlinestore.onlinestore.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import java.util.ArrayList;
@@ -31,6 +36,10 @@ public class User {
 
     @ManyToMany(fetch = EAGER)
     private Collection<Role> roles = new ArrayList<>();
+
+    @OneToOne(fetch = EAGER)
+    @JoinColumn(name = "token_id")
+    private Token token;
 
     public User(String username, String login, String password) {
         this.username = username;

@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.utility.TokenHelper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,8 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -33,13 +30,22 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh")) {
+        String path = request.getServletPath();
+
+        if (path.equals("/api/login")
+                || path.equals("/api/token/refresh")
+                || path.equals("/api/products/get-page")
+                || path.equals("/api/logout")
+                || path.equals("api/products/get-product")
+                || path.equals("/api/products/count-page")) {
+
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+
+            if (TokenHelper.isAuthorizationHeaderValid(authorizationHeader)) {
                 try {
-                    String token = authorizationHeader.substring("Bearer ".length());
+                    String token = TokenHelper.getTokenByAuthorizationHeader(authorizationHeader);
                     Algorithm algorithm = TokenHelper.getToken();
                     JWTVerifier verifier = JWT.require(algorithm).build();
                     DecodedJWT decodedJWT = verifier.verify(token);
@@ -53,10 +59,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
-                } catch (Exception exception) {
+                } catch (Exception e) {
                     response.setStatus(FORBIDDEN.value());
                     response.setContentType(APPLICATION_JSON_VALUE);
-                    new ObjectMapper().writeValue(response.getOutputStream(), new ErrorMessageDto(exception.getMessage()));
+                    new ObjectMapper().writeValue(response.getOutputStream(), new ErrorMessageDto(e.getMessage()));
                 }
             } else {
                 filterChain.doFilter(request, response);

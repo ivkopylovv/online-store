@@ -31,12 +31,12 @@ upgrading it and adding new features.
 - Visual representation of the products by pages
 
 - Actions with products:
+
   - For user:
   
     - ``select product``
     - ``view detailed product information``
-
-- Actions with product:
+    
   - For admin:
   
     -  ``add product``
@@ -51,3 +51,10 @@ upgrading it and adding new features.
   - ``clear cart/favourites``
   - ``buy products from the cart``
 
+## Authentication
+
+![Auth](src/main/resources/schemes/1.jpg?raw=true)
+
+## Authorization
+
+![Auth](src/main/resources/schemes/2.jpg?raw=true)

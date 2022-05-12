@@ -53,8 +53,8 @@ upgrading it and adding new features.
 
 ## Authentication
 
-![Auth](src/main/resources/schemes/1.jpg?raw=true)
+![Auth](https://github.com/ivkopylovv/online-store/blob/main/src/main/resources/schemes/1.jpg?raw=true)
 
 ## Authorization
 
-![Auth](src/main/resources/schemes/2.jpg?raw=true)
+![Auth](https://github.com/ivkopylovv/online-store/blob/main/src/main/resources/schemes/2.jpg?raw=true)

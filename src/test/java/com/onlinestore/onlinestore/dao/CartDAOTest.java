@@ -52,7 +52,7 @@ class CartDAOTest {
         List<Cart> excepted = new ArrayList<Cart>();
 
         // when
-        List <Cart> actual = cartDAO.
+        List<Cart> actual = cartDAO.
                 findByCartIdUserId(Long.valueOf(3));
 
         // then

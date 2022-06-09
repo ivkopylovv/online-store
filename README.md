@@ -1,8 +1,7 @@
 # ⚡ Simple online-store
-This project was started at the Tinkoff Design Workshop as a 
-study of the Spring Framework and related web technologies. 
-At the moment, I am continuing to work on the project, 
-upgrading it and adding new features.
+
+This project was started at the Tinkoff Design Workshop as a study of the Spring Framework and related web technologies.
+At the moment, I am continuing to work on the project, upgrading it and adding new features.
 
 ## Technologies
 
@@ -23,33 +22,33 @@ upgrading it and adding new features.
 
 - Auth opportunities with roles and secured access:
 
-  - ``Registration for user``
-  - ``Role authorization``
-  - ``Logout of account``
-  - ``Unlimited access for admin``
+    - ``Registration for user``
+    - ``Role authorization``
+    - ``Logout of account``
+    - ``Unlimited access for admin``
 
 - Visual representation of the products by pages
 
 - Actions with products:
 
-  - For user:
-  
-    - ``select product``
-    - ``view detailed product information``
-    
-  - For admin:
-  
-    -  ``add product``
-    -  ``update product``
-    -  ``delete product``
+    - For user:
 
-- Actions with cart and favourites: 
+        - ``select product``
+        - ``view detailed product information``
 
-  - ``add product to cart/favourites``
-  - ``delete product from cart/favourites``
-  - ``select products in cart/favourites``
-  - ``clear cart/favourites``
-  - ``buy products from the cart``
+    - For admin:
+
+        - ``add product``
+        - ``update product``
+        - ``delete product``
+
+- Actions with cart and favourites:
+
+    - ``add product to cart/favourites``
+    - ``delete product from cart/favourites``
+    - ``select products in cart/favourites``
+    - ``clear cart/favourites``
+    - ``buy products from the cart``
 
 ## Authentication scheme
 

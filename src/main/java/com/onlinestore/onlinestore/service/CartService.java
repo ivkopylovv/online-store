@@ -2,6 +2,9 @@ package com.onlinestore.onlinestore.service;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.ProductOption;
+import com.onlinestore.onlinestore.dao.CartDAO;
+import com.onlinestore.onlinestore.dao.ProductDAO;
+import com.onlinestore.onlinestore.dao.UserDAO;
 import com.onlinestore.onlinestore.dto.request.ProductAddToCartDto;
 import com.onlinestore.onlinestore.dto.request.ProductDeleteFromCart;
 import com.onlinestore.onlinestore.dto.request.UserCartClearDto;
@@ -10,9 +13,6 @@ import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
 import com.onlinestore.onlinestore.embeddable.CartId;
 import com.onlinestore.onlinestore.entity.Cart;
 import com.onlinestore.onlinestore.exception.*;
-import com.onlinestore.onlinestore.dao.CartDAO;
-import com.onlinestore.onlinestore.dao.ProductDAO;
-import com.onlinestore.onlinestore.dao.UserDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -47,29 +47,32 @@ public class CartService {
     }
 
     public List<ProductInfoDto> getCartProductsPage(UserIdPageNumberDto userIdPageNumberDto) {
-            List<Long> productIds = cartDAO.
-                findAllByCartIdUserId(
+        List<Long> productIds = cartDAO
+                .findAllByCartIdUserId(
                         userIdPageNumberDto.getUserId(),
                         PageRequest.of(
                                 userIdPageNumberDto.getPageNumber(),
-                                ProductOption.PAGE_COUNT)).
-                stream().map(Cart::getCartId).map(CartId::getProductId).
-                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
+                                ProductOption.PAGE_COUNT))
+                .stream()
+                .map(Cart::getCartId)
+                .map(CartId::getProductId)
+                .collect(Collectors
+                        .collectingAndThen(Collectors.toList(), result -> {
                             if (result.isEmpty()) {
                                 throw new CartIsEmptyException(ErrorMessage.CART_IS_EMPTY);
                             }
                             return result;
-                }));
+                        }));
 
-        List<ProductInfoDto> products = productIds.
-                stream().map(productId ->
-                        productDAO.findById(productId).get()).
-                map(product -> new ProductInfoDto(
+        List<ProductInfoDto> products = productIds
+                .stream()
+                .map(productId -> productDAO.findById(productId).get())
+                .map(product -> new ProductInfoDto(
                         product.getId(),
                         product.getName(),
                         product.getPrice(),
-                        product.getImage())).
-                collect(Collectors.toList());
+                        product.getImage()))
+                .collect(Collectors.toList());
 
         return products;
     }
@@ -88,19 +91,23 @@ public class CartService {
     }
 
     public void clearCart(UserCartClearDto userCartClearDto) {
-        List<Cart> cartEntities = cartDAO.
-                findByCartIdUserId(userCartClearDto.getUserId()).
-                stream().
-                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
-                    if (result.isEmpty()) {
-                        throw new CartIsEmptyException(ErrorMessage.CART_IS_EMPTY);
-                    }
-                    return result;
-                }));
+        List<Cart> cartEntities = cartDAO
+                .findByCartIdUserId(userCartClearDto.getUserId())
+                .stream()
+                .collect(Collectors.
+                        collectingAndThen(Collectors.toList(), result -> {
+                            if (result.isEmpty()) {
+                                throw new CartIsEmptyException(ErrorMessage.CART_IS_EMPTY);
+                            }
+                            return result;
+                        })
+                );
 
-        for (Cart cart : cartEntities) {
-            cartDAO.delete(cart);
-        }
+        cartEntities
+                .stream()
+                .forEach(cartEntity ->
+                        cartDAO.delete(cartEntity)
+                );
     }
 
 }

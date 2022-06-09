@@ -10,13 +10,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class ProductDAOTest {
@@ -33,7 +32,7 @@ class ProductDAOTest {
 
     @BeforeEach
     public void setUp() {
-        product = new Product("name", "description","/image/1.jpg", Double.valueOf(500));
+        product = new Product("name", "description", "/image/1.jpg", Double.valueOf(500));
     }
 
     @Test
@@ -59,7 +58,7 @@ class ProductDAOTest {
                 Double.valueOf(1000)
         );
         productDAO.save(secondProduct);
-        List <Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
+        List<Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
 
         // when
         List<Product> actual = productDAO.
@@ -74,7 +73,7 @@ class ProductDAOTest {
         // given
         String name = "name";
         productDAO.save(product);
-        List <Product> expected = new ArrayList<Product>(Arrays.asList(product));
+        List<Product> expected = new ArrayList<Product>(Arrays.asList(product));
 
         // when
         List<Product> actual = productDAO.getByNameStartingWith(
@@ -99,7 +98,7 @@ class ProductDAOTest {
                 Double.valueOf(1000)
         );
         productDAO.save(secondProduct);
-        List <Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
+        List<Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
 
         // when
         Long actual = productDAO.countByNameStartingWith(name);

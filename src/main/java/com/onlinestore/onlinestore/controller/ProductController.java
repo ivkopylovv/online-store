@@ -33,13 +33,11 @@ public class ProductController {
                     HttpStatus.OK
             );
         } catch (ProductAlreadyExistException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_ALREADY_EXIST),
                     HttpStatus.BAD_REQUEST);
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -57,13 +55,11 @@ public class ProductController {
                     HttpStatus.OK
             );
         } catch (ProductAlreadyExistException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_WITH_NAME_ALREADY_EXIST),
                     HttpStatus.BAD_REQUEST);
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -82,14 +78,12 @@ public class ProductController {
             );
 
         } catch (ProductNotFoundException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -106,28 +100,24 @@ public class ProductController {
                     productService.getProduct(id),
                     HttpStatus.OK);
         } catch (ProductNotFoundException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
         } catch (ProductImagesNotFoundException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
         } catch (ProductTagsNotFoundException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_TAGS_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -144,7 +134,6 @@ public class ProductController {
                     HttpStatus.OK
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -162,7 +151,6 @@ public class ProductController {
                     HttpStatus.OK
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -173,15 +161,14 @@ public class ProductController {
 
     @GetMapping(value = "/get-page", params = {"name", "page", "asc"})
     public ResponseEntity getProductsPage(@RequestParam String name,
-                                                @RequestParam int page,
-                                                @RequestParam Boolean asc) {
+                                          @RequestParam int page,
+                                          @RequestParam Boolean asc) {
         try {
             return new ResponseEntity(
                     productService.searchProductsByNameSortingByParameter(name, page, asc, "name"),
                     HttpStatus.OK
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -192,16 +179,15 @@ public class ProductController {
 
     @GetMapping(value = "/get-page", params = {"name", "page", "asc", "sorting"})
     public ResponseEntity getProductsPage(@RequestParam String name,
-                                                @RequestParam int page,
-                                                @RequestParam Boolean asc,
-                                                @RequestParam String sorting) {
+                                          @RequestParam int page,
+                                          @RequestParam Boolean asc,
+                                          @RequestParam String sorting) {
         try {
             return new ResponseEntity(
                     productService.searchProductsByNameSortingByParameter(name, page, asc, sorting),
                     HttpStatus.OK
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -218,7 +204,6 @@ public class ProductController {
                     HttpStatus.OK
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -235,7 +220,6 @@ public class ProductController {
                     HttpStatus.OK
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),

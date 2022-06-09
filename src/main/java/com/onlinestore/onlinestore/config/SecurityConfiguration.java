@@ -35,31 +35,38 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManagerBean(), tokenService);
         authenticationFilter.setFilterProcessesUrl("/api/login");
 
-        http.csrf().disable().
-                sessionManagement().sessionCreationPolicy(STATELESS).
-                and().
-                authorizeRequests().antMatchers(
+        http
+                .csrf()
+                .disable()
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers(
                         "/api/login/**",
                         "/api/token/refresh/**",
                         "/api/registration/**",
                         "/api/logout/**",
                         "/api/products/get-product/**",
                         "/api/products/get-page/**",
-                        "/api/products/count-page/**").permitAll().
-                and().
-                authorizeRequests().antMatchers(
+                        "/api/products/count-page/**").permitAll()
+                .and()
+                .authorizeRequests()
+                .antMatchers(
                         "/api/products/add-product/**",
                         "/api/products/update-product/**",
                         "/api/products/delete-product/**").hasAnyAuthority("ROLE_ADMIN").
-                and().
-                authorizeRequests().antMatchers(
+                and()
+                .authorizeRequests()
+                .antMatchers(
                         "/api/favourites/**",
-                        "/api/cart/**").hasAnyAuthority( "ROLE_USER").
-                and().
-                authorizeRequests().anyRequest().authenticated().
-                and().
-                addFilter(authenticationFilter).
-                addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+                        "/api/cart/**").hasAnyAuthority("ROLE_USER")
+                .and()
+                .authorizeRequests().anyRequest().authenticated()
+                .and()
+                .addFilter(authenticationFilter)
+                .addFilterBefore(new AuthorizationFilter(),
+                        UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

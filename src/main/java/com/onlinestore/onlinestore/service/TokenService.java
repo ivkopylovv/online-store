@@ -1,10 +1,10 @@
 package com.onlinestore.onlinestore.service;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
-import com.onlinestore.onlinestore.entity.Token;
-import com.onlinestore.onlinestore.entity.User;
 import com.onlinestore.onlinestore.dao.TokenDAO;
 import com.onlinestore.onlinestore.dao.UserDAO;
+import com.onlinestore.onlinestore.entity.Token;
+import com.onlinestore.onlinestore.entity.User;
 import com.onlinestore.onlinestore.utility.DateHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,8 +17,9 @@ public class TokenService {
     private final TokenDAO tokenDAO;
 
     public void saveRefreshToken(String login, String refreshToken) {
-        User user = userDAO.findByLogin(login).
-                orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND));
+        User user = userDAO
+                .findByLogin(login)
+                .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         Token prevToken = user.getToken();
 

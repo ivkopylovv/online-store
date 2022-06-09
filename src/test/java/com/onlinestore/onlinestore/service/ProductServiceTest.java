@@ -1,7 +1,7 @@
 package com.onlinestore.onlinestore.service;
 
-import com.onlinestore.onlinestore.entity.Product;
 import com.onlinestore.onlinestore.dao.ProductDAO;
+import com.onlinestore.onlinestore.entity.Product;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,10 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -31,7 +30,7 @@ class ProductServiceTest {
 
     @BeforeEach
     public void setUp() {
-        product = new Product("name", "description","/image/1.jpg", Double.valueOf(500));
+        product = new Product("name", "description", "/image/1.jpg", Double.valueOf(500));
     }
 
     @Test
@@ -54,7 +53,7 @@ class ProductServiceTest {
                 "description2",
                 "/image/1.jpg",
                 Double.valueOf(500)
-                ));
+        ));
 
         // when
         Long actual = productDAO.countByNameStartingWith("na");

@@ -11,7 +11,10 @@ import java.util.List;
 @Repository
 public interface CartDAO extends CrudRepository<Cart, Long> {
     boolean existsByCartId(CartId cartId);
+
     List<Cart> findAllByCartIdUserId(Long id, Pageable pageable);
+
     List<Cart> findByCartIdUserId(Long id);
+
     Long countByCartIdUserId(Long id);
 }

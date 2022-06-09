@@ -2,7 +2,10 @@ package com.onlinestore.onlinestore.controller;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.SuccessMessage;
-import com.onlinestore.onlinestore.dto.request.*;
+import com.onlinestore.onlinestore.dto.request.ProductAddToFavouritesDto;
+import com.onlinestore.onlinestore.dto.request.ProductDeleteFromFavouritesDto;
+import com.onlinestore.onlinestore.dto.request.UserFavouritesClearDto;
+import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
 import com.onlinestore.onlinestore.exception.*;
@@ -31,29 +34,24 @@ public class FavouritesController {
                     HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.USER_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
-        }
-        catch (ProductNotFoundException e) {
-            e.printStackTrace();
+        } catch (ProductNotFoundException e) {
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
         } catch (ProductAlreadyInFavouritesException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_ALREADY_IN_FAVOURITES),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -71,14 +69,12 @@ public class FavouritesController {
                     HttpStatus.OK
             );
         } catch (FavouritesIsEmptyException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.FAVOURITES_IS_EMPTY),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -96,14 +92,12 @@ public class FavouritesController {
                     HttpStatus.OK
             );
         } catch (FavouritesIsEmptyException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.FAVOURITES_IS_EMPTY),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -123,14 +117,12 @@ public class FavouritesController {
                     HttpStatus.OK
             );
         } catch (ProductNotInFavouritesException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_IN_FAVOURITES),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -149,14 +141,12 @@ public class FavouritesController {
                     HttpStatus.OK
             );
         } catch (FavouritesIsEmptyException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.FAVOURITES_IS_EMPTY),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),

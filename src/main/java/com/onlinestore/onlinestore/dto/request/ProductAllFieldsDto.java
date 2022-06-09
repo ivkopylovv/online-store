@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -17,5 +15,5 @@ public class ProductAllFieldsDto {
     private String image;
     private String description;
     private Double price;
-    
+
 }

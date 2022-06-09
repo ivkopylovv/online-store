@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -24,7 +23,7 @@ import static javax.persistence.GenerationType.AUTO;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name="\"user\"")
+@Table(name = "\"user\"")
 public class User {
 
     @Id

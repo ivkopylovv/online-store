@@ -12,5 +12,5 @@ import lombok.Setter;
 public class ProductDeleteFromFavouritesDto {
     private Long userId;
     private Long productId;
-    
+
 }

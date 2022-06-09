@@ -67,14 +67,12 @@ public class CartController {
                     HttpStatus.OK
             );
         } catch (CartIsEmptyException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.CART_IS_EMPTY),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -117,14 +115,12 @@ public class CartController {
                     HttpStatus.OK
             );
         } catch (CartIsEmptyException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.CART_IS_EMPTY),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),

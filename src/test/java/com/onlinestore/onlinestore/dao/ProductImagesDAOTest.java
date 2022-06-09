@@ -47,6 +47,6 @@ class ProductImagesDAOTest {
         List<ProductImages> actual = productImagesDAO.findByProductId(productEntity.getId());
 
         // then
-        assertEquals(expected.get(0).getId(),actual.get(0).getId());
+        assertEquals(expected.get(0).getId(), actual.get(0).getId());
     }
 }

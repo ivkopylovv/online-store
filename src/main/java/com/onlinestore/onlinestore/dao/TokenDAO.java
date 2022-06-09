@@ -1,8 +1,8 @@
 package com.onlinestore.onlinestore.dao;
 
+import com.onlinestore.onlinestore.entity.Token;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import com.onlinestore.onlinestore.entity.Token;
 
 import java.util.Optional;
 

@@ -2,15 +2,18 @@ package com.onlinestore.onlinestore.service;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.ProductOption;
-import com.onlinestore.onlinestore.dto.request.*;
+import com.onlinestore.onlinestore.dao.FavouritesDAO;
+import com.onlinestore.onlinestore.dao.ProductDAO;
+import com.onlinestore.onlinestore.dao.UserDAO;
+import com.onlinestore.onlinestore.dto.request.ProductAddToFavouritesDto;
+import com.onlinestore.onlinestore.dto.request.ProductDeleteFromFavouritesDto;
+import com.onlinestore.onlinestore.dto.request.UserFavouritesClearDto;
+import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
 import com.onlinestore.onlinestore.dto.response.ProductIdDto;
 import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
 import com.onlinestore.onlinestore.embeddable.FavouritesId;
 import com.onlinestore.onlinestore.entity.Favourites;
 import com.onlinestore.onlinestore.exception.*;
-import com.onlinestore.onlinestore.dao.FavouritesDAO;
-import com.onlinestore.onlinestore.dao.ProductDAO;
-import com.onlinestore.onlinestore.dao.UserDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -45,54 +48,59 @@ public class FavouritesService {
     }
 
     public List<ProductInfoDto> getFavouritesProductsPage(UserIdPageNumberDto userIdPageNumberDto) {
-        List<Long> productIds = favouritesDAO.
-                findAllByFavouritesIdUserId(
+        List<Long> productIds = favouritesDAO
+                .findAllByFavouritesIdUserId(
                         userIdPageNumberDto.getUserId(),
                         PageRequest.of(
                                 userIdPageNumberDto.getPageNumber(),
-                                ProductOption.PAGE_COUNT)).
-                stream().map(Favourites::getFavouritesId).map(FavouritesId::getProductId).
-                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
-                    if (result.isEmpty()) {
-                        new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
-                    }
-                    return result;
-                }));
+                                ProductOption.PAGE_COUNT))
+                .stream()
+                .map(Favourites::getFavouritesId)
+                .map(FavouritesId::getProductId)
+                .collect(Collectors
+                        .collectingAndThen(Collectors.toList(), result -> {
+                            if (result.isEmpty()) {
+                                new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
+                            }
+                            return result;
+                        }));
 
-        List<ProductInfoDto> products = productIds.
-                stream().map(productId ->
-                        productDAO.findById(productId).get()).
-                map(product -> new ProductInfoDto(
+        List<ProductInfoDto> products = productIds
+                .stream()
+                .map(productId -> productDAO.findById(productId).get())
+                .map(product -> new ProductInfoDto(
                         product.getId(),
                         product.getName(),
                         product.getPrice(),
-                        product.getImage())).
-                collect(Collectors.toList());
+                        product.getImage()))
+                .collect(Collectors.toList());
 
 
         return products;
     }
 
     public List<ProductIdDto> getFavouritesProductsIdPage(UserIdPageNumberDto user) {
-        List<Favourites> favouritesEntities = favouritesDAO.
-                findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.PAGE_COUNT)).
-                stream().
-                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
-                    if (result.isEmpty()) {
-                        new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
-                    }
-                    return result;
-                }));
+        List<Favourites> favouritesEntities = favouritesDAO
+                .findAllByFavouritesIdUserId(user.getUserId(),
+                        PageRequest.of(
+                                user.getPageNumber(),
+                                ProductOption.PAGE_COUNT))
+                .stream().collect(Collectors.
+                        collectingAndThen(Collectors.toList(), result -> {
+                            if (result.isEmpty()) {
+                                new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
+                            }
+                            return result;
+                        }));
 
-        List<ProductIdDto> products = favouritesEntities.
-                stream().map(favourites ->
-                        new ProductIdDto(productDAO.findById(favourites.
-                                        getFavouritesId().
-                                        getProductId()).
-                                get().
-                                getId())).
-                collect(Collectors.toList()
-                );
+        List<ProductIdDto> products = favouritesEntities
+                .stream()
+                .map(favourites ->
+                        new ProductIdDto(
+                                productDAO
+                                        .findById(favourites
+                                                .getFavouritesId().getProductId()).get().getId()))
+                .collect(Collectors.toList());
 
         return products;
     }
@@ -109,18 +117,21 @@ public class FavouritesService {
     }
 
     public void clearFavourites(UserFavouritesClearDto userFavouritesClearDto) {
-        List<Favourites> favouritesEntities = favouritesDAO.
-                findFavouritesEntityByFavouritesIdUserId(userFavouritesClearDto.getUserId()).
-                stream().
-                collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
-                    if (result.isEmpty()) {
-                        throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
-                    }
-                    return result;
-                }));
+        List<Favourites> favouritesEntities = favouritesDAO
+                .findFavouritesEntityByFavouritesIdUserId(userFavouritesClearDto.getUserId())
+                .stream()
+                .collect(Collectors
+                        .collectingAndThen(Collectors.toList(), result -> {
+                            if (result.isEmpty()) {
+                                throw new FavouritesIsEmptyException(ErrorMessage.FAVOURITES_IS_EMPTY);
+                            }
+                            return result;
+                        }));
 
-        favouritesEntities.stream().
-                forEach(favouritesEntity ->
-                        favouritesDAO.delete(favouritesEntity));
+        favouritesEntities
+                .stream()
+                .forEach(favouritesEntity ->
+                        favouritesDAO.delete(favouritesEntity)
+                );
     }
 }

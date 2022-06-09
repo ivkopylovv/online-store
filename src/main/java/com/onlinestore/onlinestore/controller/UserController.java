@@ -5,7 +5,9 @@ import com.onlinestore.onlinestore.constants.SuccessMessage;
 import com.onlinestore.onlinestore.dto.request.UserRegistrationDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
-import com.onlinestore.onlinestore.exception.*;
+import com.onlinestore.onlinestore.exception.TokenNotFoundException;
+import com.onlinestore.onlinestore.exception.UserAlreadyExistException;
+import com.onlinestore.onlinestore.exception.UserNotFoundException;
 import com.onlinestore.onlinestore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,14 +37,12 @@ public class UserController {
                     HttpStatus.OK
             );
         } catch (UserAlreadyExistException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.USER_EXISTS),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -65,21 +65,19 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletRequest request) {
         try {
-           userService.logoutUser(request.getHeader(AUTHORIZATION));
+            userService.logoutUser(request.getHeader(AUTHORIZATION));
 
             return new ResponseEntity(
                     new SuccessMessageDto(SuccessMessage.USER_LOGGED_OUT),
                     HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.USER_NOT_FOUND),
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),

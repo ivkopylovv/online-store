@@ -22,5 +22,5 @@ public interface ProductDAO extends CrudRepository<Product, Long> {
     @Transactional
     @Modifying
     @Query("update Product p set p.name = ?1, p.description = ?2, p.price = ?3 where p.id = ?4")
-    void updateNameAndDescriptionAndPriceById(String name, String description, BigDecimal price, Long id);
+    void updateNameAndDescriptionAndPriceById(String name, String description, Double price, Long id);
 }

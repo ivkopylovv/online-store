@@ -16,7 +16,7 @@ public class FullProductDto {
     private Long id;
     private String name;
     private String description;
-    private BigDecimal price;
+    private Double price;
     private List<String> images;
     private List<ProductsTagDto> tags;
 

@@ -51,10 +51,10 @@ upgrading it and adding new features.
   - ``clear cart/favourites``
   - ``buy products from the cart``
 
-## Authentication
+## Authentication scheme
 
 ![Auth](https://github.com/ivkopylovv/online-store/blob/main/src/main/resources/schemes/1.jpg?raw=true)
 
-## Authorization
+## Authorization scheme
 
 ![Auth](https://github.com/ivkopylovv/online-store/blob/main/src/main/resources/schemes/2.jpg?raw=true)

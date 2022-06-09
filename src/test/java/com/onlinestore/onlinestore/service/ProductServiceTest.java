@@ -31,7 +31,7 @@ class ProductServiceTest {
 
     @BeforeEach
     public void setUp() {
-        product = new Product("name", "description","/image/1.jpg", BigDecimal.valueOf(500));
+        product = new Product("name", "description","/image/1.jpg", Double.valueOf(500));
     }
 
     @Test
@@ -53,7 +53,7 @@ class ProductServiceTest {
                 "name2",
                 "description2",
                 "/image/1.jpg",
-                BigDecimal.valueOf(500)
+                Double.valueOf(500)
                 ));
 
         // when

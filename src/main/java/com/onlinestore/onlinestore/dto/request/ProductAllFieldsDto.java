@@ -16,6 +16,6 @@ public class ProductAllFieldsDto {
     private String name;
     private String image;
     private String description;
-    private BigDecimal price;
+    private Double price;
     
 }

@@ -33,7 +33,7 @@ class ProductDAOTest {
 
     @BeforeEach
     public void setUp() {
-        product = new Product("name", "description","/image/1.jpg", BigDecimal.valueOf(500));
+        product = new Product("name", "description","/image/1.jpg", Double.valueOf(500));
     }
 
     @Test
@@ -56,7 +56,7 @@ class ProductDAOTest {
                 "name2",
                 "description2",
                 "/image/1.jpg",
-                BigDecimal.valueOf(1000)
+                Double.valueOf(1000)
         );
         productDAO.save(secondProduct);
         List <Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
@@ -96,7 +96,7 @@ class ProductDAOTest {
                 "name2",
                 "description2",
                 "/image/1.jpg",
-                BigDecimal.valueOf(1000)
+                Double.valueOf(1000)
         );
         productDAO.save(secondProduct);
         List <Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
@@ -106,29 +106,5 @@ class ProductDAOTest {
 
         // then
         assertEquals(2, actual);
-    }
-
-    @Test
-    void itShouldUpdateProductNameAndDescriptionAndPriceById() {
-        // given
-        productDAO.save(product);
-        Product secondProduct = new Product(
-                "name2",
-                "description2",
-                "/image/1.jpg",
-                BigDecimal.valueOf(1000)
-        );
-
-        // when
-        productDAO.updateNameAndDescriptionAndPriceById(
-                        secondProduct.getName(),
-                        secondProduct.getDescription(),
-                        secondProduct.getPrice(),
-                        Long.valueOf(8)
-                );
-        Optional<Product> actual = productDAO.findByName("name2");
-
-        // then
-        assertEquals(product.getId(), actual.get().getId());
     }
 }

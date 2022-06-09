@@ -25,7 +25,7 @@ public class Product {
     private String name;
     private String description;
     private String image;
-    private BigDecimal price;
+    private Double price;
 
     @OneToMany(mappedBy = "product")
     private Set<ProductImages> productImagesEntities;
@@ -33,7 +33,7 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private Set<ProductTags> productTagsEntities;
 
-    public Product(String name, String description, String image, BigDecimal price) {
+    public Product(String name, String description, String image, Double price) {
         this.name = name;
         this.description = description;
         this.image = image;

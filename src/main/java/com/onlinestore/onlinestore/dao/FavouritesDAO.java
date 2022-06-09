@@ -1,4 +1,4 @@
-package com.onlinestore.onlinestore.repository;
+package com.onlinestore.onlinestore.dao;
 
 import com.onlinestore.onlinestore.embeddable.FavouritesId;
 import com.onlinestore.onlinestore.entity.Favourites;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface FavouritesRepository extends CrudRepository<Favourites, Long> {
+public interface FavouritesDAO extends CrudRepository<Favourites, Long> {
     boolean existsByFavouritesId(FavouritesId favouritesId);
     List<Favourites> findAllByFavouritesIdUserId(Long id, Pageable pageable);
     List<Favourites> findFavouritesEntityByFavouritesIdUserId(Long id);

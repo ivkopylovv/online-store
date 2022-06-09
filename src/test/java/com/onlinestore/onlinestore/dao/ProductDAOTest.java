@@ -1,4 +1,4 @@
-package com.onlinestore.onlinestore.repository;
+package com.onlinestore.onlinestore.dao;
 
 import com.onlinestore.onlinestore.constants.ProductOption;
 import com.onlinestore.onlinestore.entity.Product;
@@ -19,16 +19,16 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-class ProductRepositoryTest {
+class ProductDAOTest {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductDAO productDAO;
 
     private Product product;
 
     @AfterEach
     void tearDown() {
-        productRepository.deleteAll();
+        productDAO.deleteAll();
     }
 
     @BeforeEach
@@ -39,10 +39,10 @@ class ProductRepositoryTest {
     @Test
     void itShouldFindProductByName() {
         // given
-        productRepository.save(product);
+        productDAO.save(product);
 
         // when
-        Optional<Product> actual = productRepository.findByName(product.getName());
+        Optional<Product> actual = productDAO.findByName(product.getName());
 
         // then
         assertEquals(product, actual.get());
@@ -51,18 +51,18 @@ class ProductRepositoryTest {
     @Test
     void itShouldFindProductsListByOrderById() {
         // given
-        productRepository.save(product);
+        productDAO.save(product);
         Product secondProduct = new Product(
                 "name2",
                 "description2",
                 "/image/1.jpg",
                 BigDecimal.valueOf(1000)
         );
-        productRepository.save(secondProduct);
+        productDAO.save(secondProduct);
         List <Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
 
         // when
-        List<Product> actual = productRepository.
+        List<Product> actual = productDAO.
                 findByOrderById(PageRequest.of(0, ProductOption.PAGE_COUNT));
 
         // then
@@ -73,11 +73,11 @@ class ProductRepositoryTest {
     void itShouldFindProductsListByNameStartingWith() {
         // given
         String name = "name";
-        productRepository.save(product);
+        productDAO.save(product);
         List <Product> expected = new ArrayList<Product>(Arrays.asList(product));
 
         // when
-        List<Product> actual = productRepository.getByNameStartingWith(
+        List<Product> actual = productDAO.getByNameStartingWith(
                 name,
                 PageRequest.of(0, ProductOption.PAGE_COUNT, Sort.by("id").ascending())
         );
@@ -91,18 +91,18 @@ class ProductRepositoryTest {
     void itShouldReturnProductsCountByNameStartingWith() {
         // given
         String name = "name";
-        productRepository.save(product);
+        productDAO.save(product);
         Product secondProduct = new Product(
                 "name2",
                 "description2",
                 "/image/1.jpg",
                 BigDecimal.valueOf(1000)
         );
-        productRepository.save(secondProduct);
+        productDAO.save(secondProduct);
         List <Product> expected = new ArrayList<Product>(Arrays.asList(product, secondProduct));
 
         // when
-        Long actual = productRepository.countByNameStartingWith(name);
+        Long actual = productDAO.countByNameStartingWith(name);
 
         // then
         assertEquals(2, actual);
@@ -111,7 +111,7 @@ class ProductRepositoryTest {
     @Test
     void itShouldUpdateProductNameAndDescriptionAndPriceById() {
         // given
-        productRepository.save(product);
+        productDAO.save(product);
         Product secondProduct = new Product(
                 "name2",
                 "description2",
@@ -120,13 +120,13 @@ class ProductRepositoryTest {
         );
 
         // when
-        productRepository.updateNameAndDescriptionAndPriceById(
+        productDAO.updateNameAndDescriptionAndPriceById(
                         secondProduct.getName(),
                         secondProduct.getDescription(),
                         secondProduct.getPrice(),
                         Long.valueOf(8)
                 );
-        Optional<Product> actual = productRepository.findByName("name2");
+        Optional<Product> actual = productDAO.findByName("name2");
 
         // then
         assertEquals(product.getId(), actual.get().getId());

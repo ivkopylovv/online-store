@@ -32,29 +32,24 @@ public class CartController {
                     HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.USER_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
-        }
-        catch (ProductNotFoundException e) {
-            e.printStackTrace();
+        } catch (ProductNotFoundException e) {
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
                     HttpStatus.BAD_REQUEST
             );
         } catch (ProductAlreadyInCartException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_ALREADY_IN_CART),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
@@ -98,14 +93,12 @@ public class CartController {
                     HttpStatus.OK
             );
         } catch (ProductNotInCartException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_IN_CART),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
-            e.printStackTrace();
 
             return new ResponseEntity(
                     new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),

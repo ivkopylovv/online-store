@@ -7,12 +7,12 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import java.util.Date;
 
 import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.GenerationType.AUTO;
 
 @Entity
 @NoArgsConstructor
@@ -22,7 +22,7 @@ import static javax.persistence.FetchType.EAGER;
 public class Token {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = AUTO)
     private Long tokenId;
     private String token;
     private Date expiredInDate;

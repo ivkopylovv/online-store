@@ -4,6 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+!**/src/main/resources/
 
 ### STS ###
 .apt_generated
@@ -36,6 +37,3 @@ out/
 ### VS Code ###
 .vscode/
 
-### Micla ###
-/src/main/resources/application.properties
-/src/main/resources/schemes/

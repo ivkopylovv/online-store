@@ -1,4 +1,4 @@
-package com.onlinestore.onlinestore.repository;
+package com.onlinestore.onlinestore.dao;
 
 import com.onlinestore.onlinestore.entity.Product;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends CrudRepository<Product, Long> {
+public interface ProductDAO extends CrudRepository<Product, Long> {
     Optional<Product> findByName(String name);
     List<Product> findByOrderById(Pageable pageable);
     List<Product> getByNameStartingWith(String name, Pageable pageable);

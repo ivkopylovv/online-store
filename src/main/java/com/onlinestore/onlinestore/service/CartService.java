@@ -10,9 +10,9 @@ import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
 import com.onlinestore.onlinestore.embeddable.CartId;
 import com.onlinestore.onlinestore.entity.Cart;
 import com.onlinestore.onlinestore.exception.*;
-import com.onlinestore.onlinestore.repository.CartRepository;
-import com.onlinestore.onlinestore.repository.ProductRepository;
-import com.onlinestore.onlinestore.repository.UserRepository;
+import com.onlinestore.onlinestore.dao.CartDAO;
+import com.onlinestore.onlinestore.dao.ProductDAO;
+import com.onlinestore.onlinestore.dao.UserDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,31 +23,31 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CartService {
-    private final CartRepository cartRepository;
-    private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private final CartDAO cartDAO;
+    private final ProductDAO productDAO;
+    private final UserDAO userDAO;
 
     public Long addProductToCart(ProductAddToCartDto productAddToCartDto) {
-        if (!userRepository.existsById(productAddToCartDto.getUserId())) {
+        if (!userDAO.existsById(productAddToCartDto.getUserId())) {
             throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND);
         }
 
-        if (!productRepository.existsById(productAddToCartDto.getProductId())) {
+        if (!productDAO.existsById(productAddToCartDto.getProductId())) {
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND);
         }
 
-        if (cartRepository.existsByCartId(new CartId(productAddToCartDto.getUserId(), productAddToCartDto.getProductId()))) {
+        if (cartDAO.existsByCartId(new CartId(productAddToCartDto.getUserId(), productAddToCartDto.getProductId()))) {
             throw new ProductAlreadyInCartException(ErrorMessage.PRODUCT_ALREADY_IN_CART);
         }
 
         Cart cart = new Cart(new CartId(productAddToCartDto.getUserId(), productAddToCartDto.getProductId()));
-        cartRepository.save(cart);
+        cartDAO.save(cart);
 
-        return cartRepository.countByCartIdUserId(productAddToCartDto.getUserId());
+        return cartDAO.countByCartIdUserId(productAddToCartDto.getUserId());
     }
 
     public List<ProductInfoDto> getCartProductsPage(UserIdPageNumberDto userIdPageNumberDto) {
-            List<Long> productIds = cartRepository.
+            List<Long> productIds = cartDAO.
                 findAllByCartIdUserId(
                         userIdPageNumberDto.getUserId(),
                         PageRequest.of(
@@ -63,7 +63,7 @@ public class CartService {
 
         List<ProductInfoDto> products = productIds.
                 stream().map(productId ->
-                        productRepository.findById(productId).get()).
+                        productDAO.findById(productId).get()).
                 map(product -> new ProductInfoDto(
                         product.getId(),
                         product.getName(),
@@ -77,18 +77,18 @@ public class CartService {
     public Long deleteProductFromCart(ProductDeleteFromCart product) {
         CartId cartId = new CartId(product.getUserId(), product.getProductId());
 
-        if (!cartRepository.existsByCartId(cartId)) {
+        if (!cartDAO.existsByCartId(cartId)) {
             throw new ProductNotInCartException(ErrorMessage.PRODUCT_NOT_IN_CART);
         }
 
         Cart cart = new Cart(cartId);
-        cartRepository.delete(cart);
+        cartDAO.delete(cart);
 
-        return cartRepository.countByCartIdUserId(product.getUserId());
+        return cartDAO.countByCartIdUserId(product.getUserId());
     }
 
     public void clearCart(UserCartClearDto userCartClearDto) {
-        List<Cart> cartEntities = cartRepository.
+        List<Cart> cartEntities = cartDAO.
                 findByCartIdUserId(userCartClearDto.getUserId()).
                 stream().
                 collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
@@ -99,7 +99,7 @@ public class CartService {
                 }));
 
         for (Cart cart : cartEntities) {
-            cartRepository.delete(cart);
+            cartDAO.delete(cart);
         }
     }
 

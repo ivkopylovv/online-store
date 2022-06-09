@@ -7,13 +7,11 @@ import com.onlinestore.onlinestore.dto.response.FullProductDto;
 import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
 import com.onlinestore.onlinestore.dto.response.ProductsTagDto;
 import com.onlinestore.onlinestore.entity.Product;
-import com.onlinestore.onlinestore.entity.ProductImages;
-import com.onlinestore.onlinestore.entity.ProductTags;
 import com.onlinestore.onlinestore.exception.ProductAlreadyExistException;
 import com.onlinestore.onlinestore.exception.ProductNotFoundException;
-import com.onlinestore.onlinestore.repository.ProductImagesRepository;
-import com.onlinestore.onlinestore.repository.ProductRepository;
-import com.onlinestore.onlinestore.repository.ProductTagsRepository;
+import com.onlinestore.onlinestore.dao.ProductImagesDAO;
+import com.onlinestore.onlinestore.dao.ProductDAO;
+import com.onlinestore.onlinestore.dao.ProductTagsDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -26,12 +24,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-    private final ProductRepository productRepository;
-    private final ProductImagesRepository productImagesRepository;
-    private final ProductTagsRepository productTagsRepository;
+    private final ProductDAO productDAO;
+    private final ProductImagesDAO productImagesDAO;
+    private final ProductTagsDAO productTagsDAO;
 
     public void addProduct(ProductAllFieldsDto product) {
-        productRepository.findByName(product.getName()).
+        productDAO.findByName(product.getName()).
                 ifPresent(result -> {
                     throw new ProductAlreadyExistException(ErrorMessage.PRODUCT_ALREADY_EXIST);
                 });
@@ -42,14 +40,14 @@ public class ProductService {
                 product.getImage(),
                 product.getPrice()
         );
-        productRepository.save(newProduct);
+        productDAO.save(newProduct);
     }
 
     public FullProductDto getProduct(long id) {
-        Optional<Product> product = Optional.ofNullable(productRepository.findById(id).
+        Optional<Product> product = Optional.ofNullable(productDAO.findById(id).
                 orElseThrow(() -> new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND)));
 
-        List <String> productsImages = productImagesRepository.
+        List <String> productsImages = productImagesDAO.
                 findByProductId(id).
                 stream().
                 map(productsImage -> productsImage.getImage()).
@@ -60,7 +58,7 @@ public class ProductService {
                     return result;
                 }));
 
-        List <ProductsTagDto> productsTags = productTagsRepository.
+        List <ProductsTagDto> productsTags = productTagsDAO.
                 findByProductId(id).
                 stream().
                 map(productTag -> new ProductsTagDto(productTag.getType(), productTag.getValue())).
@@ -81,15 +79,15 @@ public class ProductService {
     }
 
     public void deleteProduct(long id) {
-        Optional<Product> product = Optional.ofNullable(productRepository.findById(id).
+        Optional<Product> product = Optional.ofNullable(productDAO.findById(id).
                 orElseThrow(() -> new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND)));
 
-        productRepository.delete(product.get());
+        productDAO.delete(product.get());
     }
 
     public List<ProductInfoDto> getPageProducts(int page) {
 
-        return productRepository.
+        return productDAO.
                 findByOrderById(PageRequest.of(page, ProductOption.PAGE_COUNT)).
                 stream().
                 map(product -> new ProductInfoDto(
@@ -102,7 +100,7 @@ public class ProductService {
 
     public List<ProductInfoDto> searchProductsByNameSortingByParameter(String name, int page, Boolean asc, String parameter) {
 
-        return productRepository.
+        return productDAO.
                 getByNameStartingWith(
                         name,
                         PageRequest.of(page, ProductOption.PAGE_COUNT,
@@ -118,20 +116,20 @@ public class ProductService {
     }
 
     public Long getCountPagesProductsLikeName() {
-        return productRepository.count() / ProductOption.PAGE_COUNT;
+        return productDAO.count() / ProductOption.PAGE_COUNT;
     }
 
     public Long getCountPagesProductsLikeName(String name) {
-        return productRepository.countByNameStartingWith(name) / ProductOption.PAGE_COUNT;
+        return productDAO.countByNameStartingWith(name) / ProductOption.PAGE_COUNT;
     }
 
     public void updateProductById(ProductAllFieldsDto product) {
-        productRepository.findByName(product.getName()).
+        productDAO.findByName(product.getName()).
                 ifPresent(result -> {
                     throw new ProductAlreadyExistException(ErrorMessage.PRODUCT_WITH_NAME_ALREADY_EXIST);
                 });
 
-        productRepository.updateNameAndDescriptionAndPriceById(
+        productDAO.updateNameAndDescriptionAndPriceById(
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),

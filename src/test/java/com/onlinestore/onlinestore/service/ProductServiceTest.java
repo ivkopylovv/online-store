@@ -1,7 +1,7 @@
 package com.onlinestore.onlinestore.service;
 
 import com.onlinestore.onlinestore.entity.Product;
-import com.onlinestore.onlinestore.repository.ProductRepository;
+import com.onlinestore.onlinestore.dao.ProductDAO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 class ProductServiceTest {
     @Autowired
-    private ProductRepository productRepository;
+    private ProductDAO productDAO;
 
     private Product product;
 
     @AfterEach
     void tearDown() {
-        productRepository.deleteAll();
+        productDAO.deleteAll();
 
     }
 
@@ -37,9 +37,9 @@ class ProductServiceTest {
     @Test
     void itShouldAddProduct() {
         // given
-        productRepository.save(product);
+        productDAO.save(product);
         // when
-        Optional<Product> actual = productRepository.findByName(product.getName());
+        Optional<Product> actual = productDAO.findByName(product.getName());
 
         // then
         assertEquals(product, actual.get());
@@ -48,8 +48,8 @@ class ProductServiceTest {
     @Test
     void itShouldGetCountPagesProductsLikeName() {
         // given
-        productRepository.save(product);
-        productRepository.save(new Product(
+        productDAO.save(product);
+        productDAO.save(new Product(
                 "name2",
                 "description2",
                 "/image/1.jpg",
@@ -57,7 +57,7 @@ class ProductServiceTest {
                 ));
 
         // when
-        Long actual = productRepository.countByNameStartingWith("na");
+        Long actual = productDAO.countByNameStartingWith("na");
 
         // then
         assertEquals(2, actual);

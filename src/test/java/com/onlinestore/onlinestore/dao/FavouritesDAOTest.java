@@ -1,4 +1,4 @@
-package com.onlinestore.onlinestore.repository;
+package com.onlinestore.onlinestore.dao;
 
 import com.onlinestore.onlinestore.constants.ProductOption;
 import com.onlinestore.onlinestore.embeddable.FavouritesId;
@@ -17,16 +17,16 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @DataJpaTest
-class FavouritesRepositoryTest {
+class FavouritesDAOTest {
     @Autowired
-    private FavouritesRepository favouritesRepository;
+    private FavouritesDAO favouritesDAO;
 
     private Favourites favouritesEntity;
     private FavouritesId favouritesId;
 
     @AfterEach
     void tearDown() {
-        favouritesRepository.deleteAll();
+        favouritesDAO.deleteAll();
     }
 
     @BeforeEach
@@ -38,10 +38,10 @@ class FavouritesRepositoryTest {
     @Test
     void itShouldExistsFavouritesEntityByFavouritesId() {
         // given
-        favouritesRepository.save(favouritesEntity);
+        favouritesDAO.save(favouritesEntity);
 
         // when
-        boolean actual = favouritesRepository.existsByFavouritesId(favouritesId);
+        boolean actual = favouritesDAO.existsByFavouritesId(favouritesId);
 
         // then
         assertEquals(true, actual);
@@ -50,11 +50,11 @@ class FavouritesRepositoryTest {
     @Test
     void itShouldFindAllByFavouritesIdUserId() {
         // given
-        favouritesRepository.save(favouritesEntity);
+        favouritesDAO.save(favouritesEntity);
         List<Favourites> excepted = new ArrayList<>(Arrays.asList(favouritesEntity));
 
         // when
-        List<Favourites> actual = favouritesRepository.
+        List<Favourites> actual = favouritesDAO.
                 findAllByFavouritesIdUserId(Long.valueOf(2), PageRequest.of(0, ProductOption.PAGE_COUNT));
 
         // then

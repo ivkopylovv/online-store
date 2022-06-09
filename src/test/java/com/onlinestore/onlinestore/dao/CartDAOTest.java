@@ -1,4 +1,4 @@
-package com.onlinestore.onlinestore.repository;
+package com.onlinestore.onlinestore.dao;
 
 import com.onlinestore.onlinestore.embeddable.CartId;
 import com.onlinestore.onlinestore.entity.Cart;
@@ -14,17 +14,17 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @DataJpaTest
-class CartRepositoryTest {
+class CartDAOTest {
 
     @Autowired
-    private CartRepository cartRepository;
+    private CartDAO cartDAO;
 
     private Cart cart;
     private CartId cartId;
 
     @AfterEach
     void tearDown() {
-        cartRepository.deleteAll();
+        cartDAO.deleteAll();
     }
 
     @BeforeEach
@@ -36,10 +36,10 @@ class CartRepositoryTest {
     @Test
     void itShouldCheckThatBasketExistsEntityByBasketId() {
         // given
-        cartRepository.save(cart);
+        cartDAO.save(cart);
 
         // when
-        boolean actual = cartRepository.existsByCartId(cartId);
+        boolean actual = cartDAO.existsByCartId(cartId);
 
         // then
         assertEquals(true, actual);
@@ -48,11 +48,11 @@ class CartRepositoryTest {
     @Test
     void itShouldFindAllEntitiesByBasketIdUserId() {
         // given
-        cartRepository.save(cart);
+        cartDAO.save(cart);
         List<Cart> excepted = new ArrayList<Cart>();
 
         // when
-        List <Cart> actual = cartRepository.
+        List <Cart> actual = cartDAO.
                 findByCartIdUserId(Long.valueOf(3));
 
         // then
@@ -62,13 +62,13 @@ class CartRepositoryTest {
     @Test
     void itShouldReturnCountByBasketIdUserId() {
         // given
-        cartRepository.save(cart);
+        cartDAO.save(cart);
         CartId secondCartId = new CartId(Long.valueOf(2), Long.valueOf(2));
         Cart secondCart = new Cart(secondCartId);
-        cartRepository.save(secondCart);
+        cartDAO.save(secondCart);
 
         // when
-        Long actual = cartRepository.countByCartIdUserId(Long.valueOf(2));
+        Long actual = cartDAO.countByCartIdUserId(Long.valueOf(2));
 
         // then
         assertEquals(Long.valueOf(1), actual);

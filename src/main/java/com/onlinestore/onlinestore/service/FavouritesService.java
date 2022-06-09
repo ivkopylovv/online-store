@@ -8,9 +8,9 @@ import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
 import com.onlinestore.onlinestore.embeddable.FavouritesId;
 import com.onlinestore.onlinestore.entity.Favourites;
 import com.onlinestore.onlinestore.exception.*;
-import com.onlinestore.onlinestore.repository.FavouritesRepository;
-import com.onlinestore.onlinestore.repository.ProductRepository;
-import com.onlinestore.onlinestore.repository.UserRepository;
+import com.onlinestore.onlinestore.dao.FavouritesDAO;
+import com.onlinestore.onlinestore.dao.ProductDAO;
+import com.onlinestore.onlinestore.dao.UserDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,31 +21,31 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FavouritesService {
-    private final FavouritesRepository favouritesRepository;
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    private final FavouritesDAO favouritesDAO;
+    private final UserDAO userDAO;
+    private final ProductDAO productDAO;
 
     public Favourites addProductToFavourites(ProductAddToFavouritesDto productDto) {
-        if (!userRepository.existsById(productDto.getUserId())) {
+        if (!userDAO.existsById(productDto.getUserId())) {
             throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND);
         }
 
-        if (!productRepository.existsById(productDto.getProductId())) {
+        if (!productDAO.existsById(productDto.getProductId())) {
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND);
         }
 
-        if (favouritesRepository.existsByFavouritesId(new FavouritesId(productDto.getUserId(), productDto.getProductId()))) {
+        if (favouritesDAO.existsByFavouritesId(new FavouritesId(productDto.getUserId(), productDto.getProductId()))) {
             throw new ProductAlreadyInFavouritesException(ErrorMessage.PRODUCT_ALREADY_IN_FAVOURITES);
         }
 
         Favourites favouritesEntity = new Favourites
                 (new FavouritesId(productDto.getUserId(), productDto.getProductId()));
 
-        return favouritesRepository.save(favouritesEntity);
+        return favouritesDAO.save(favouritesEntity);
     }
 
     public List<ProductInfoDto> getFavouritesProductsPage(UserIdPageNumberDto userIdPageNumberDto) {
-        List<Long> productIds = favouritesRepository.
+        List<Long> productIds = favouritesDAO.
                 findAllByFavouritesIdUserId(
                         userIdPageNumberDto.getUserId(),
                         PageRequest.of(
@@ -61,7 +61,7 @@ public class FavouritesService {
 
         List<ProductInfoDto> products = productIds.
                 stream().map(productId ->
-                        productRepository.findById(productId).get()).
+                        productDAO.findById(productId).get()).
                 map(product -> new ProductInfoDto(
                         product.getId(),
                         product.getName(),
@@ -74,7 +74,7 @@ public class FavouritesService {
     }
 
     public List<ProductIdDto> getFavouritesProductsIdPage(UserIdPageNumberDto user) {
-        List<Favourites> favouritesEntities = favouritesRepository.
+        List<Favourites> favouritesEntities = favouritesDAO.
                 findAllByFavouritesIdUserId(user.getUserId(), PageRequest.of(user.getPageNumber(), ProductOption.PAGE_COUNT)).
                 stream().
                 collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
@@ -86,7 +86,7 @@ public class FavouritesService {
 
         List<ProductIdDto> products = favouritesEntities.
                 stream().map(favourites ->
-                        new ProductIdDto(productRepository.findById(favourites.
+                        new ProductIdDto(productDAO.findById(favourites.
                                         getFavouritesId().
                                         getProductId()).
                                 get().
@@ -100,16 +100,16 @@ public class FavouritesService {
     public void deleteProductFromFavourites(ProductDeleteFromFavouritesDto productDto) {
         FavouritesId favouritesId = new FavouritesId(productDto.getUserId(), productDto.getProductId());
 
-        if (!favouritesRepository.existsByFavouritesId(favouritesId)) {
+        if (!favouritesDAO.existsByFavouritesId(favouritesId)) {
             throw new ProductNotInFavouritesException(ErrorMessage.PRODUCT_NOT_IN_FAVOURITES);
         }
 
         Favourites favourites = new Favourites(favouritesId);
-        favouritesRepository.delete(favourites);
+        favouritesDAO.delete(favourites);
     }
 
     public void clearFavourites(UserFavouritesClearDto userFavouritesClearDto) {
-        List<Favourites> favouritesEntities = favouritesRepository.
+        List<Favourites> favouritesEntities = favouritesDAO.
                 findFavouritesEntityByFavouritesIdUserId(userFavouritesClearDto.getUserId()).
                 stream().
                 collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
@@ -121,6 +121,6 @@ public class FavouritesService {
 
         favouritesEntities.stream().
                 forEach(favouritesEntity ->
-                        favouritesRepository.delete(favouritesEntity));
+                        favouritesDAO.delete(favouritesEntity));
     }
 }

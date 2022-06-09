@@ -9,8 +9,8 @@ import com.onlinestore.onlinestore.entity.User;
 import com.onlinestore.onlinestore.exception.TokenNotFoundException;
 import com.onlinestore.onlinestore.exception.UserAlreadyExistException;
 import com.onlinestore.onlinestore.exception.UserNotFoundException;
-import com.onlinestore.onlinestore.repository.TokenRepository;
-import com.onlinestore.onlinestore.repository.UserRepository;
+import com.onlinestore.onlinestore.dao.TokenDAO;
+import com.onlinestore.onlinestore.dao.UserDAO;
 import com.onlinestore.onlinestore.utility.DateHelper;
 import com.onlinestore.onlinestore.utility.TokenHelper;
 import lombok.RequiredArgsConstructor;
@@ -38,13 +38,13 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final UserDAO userDAO;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final TokenRepository tokenRepository;
+    private final TokenDAO tokenDAO;
     private final TokenService tokenService;
 
     public void registerUser(UserRegistrationDto userDto) {
-        userRepository.findByLogin(userDto.getLogin()).
+        userDAO.findByLogin(userDto.getLogin()).
                 ifPresent(result -> {
                     throw new UserAlreadyExistException(ErrorMessage.USER_EXISTS);
                 });
@@ -57,12 +57,12 @@ public class UserService implements UserDetailsService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.getRoles().add(new Role(1L, "ROLE_USER"));
-        userRepository.save(user);
+        userDAO.save(user);
     }
 
     @Override
     public UserDetails loadUserByUsername(String login) {
-        User user = userRepository.findByLogin(login).
+        User user = userDAO.findByLogin(login).
                 orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -78,7 +78,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUser(String login) {
-        return userRepository.findByLogin(login).
+        return userDAO.findByLogin(login).
                 orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND));
     }
 
@@ -88,8 +88,8 @@ public class UserService implements UserDetailsService {
         User user = getUser(login);
 
         user.setToken(null);
-        userRepository.save(user);
-        tokenRepository.delete(tokenRepository.findByToken(refresh_token).get());
+        userDAO.save(user);
+        tokenDAO.delete(tokenDAO.findByToken(refresh_token).get());
     }
 
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -106,7 +106,7 @@ public class UserService implements UserDetailsService {
         String refresh_token = TokenHelper.getTokenByAuthorizationHeader(authorizationHeader);
         String login = TokenHelper.getUserLoginByToken(refresh_token);
         User user = getUser(login);
-        Date expiredInDate = tokenRepository.findByToken(refresh_token).get().getExpiredInDate();
+        Date expiredInDate = tokenDAO.findByToken(refresh_token).get().getExpiredInDate();
 
         if (expiredInDate.before(DateHelper.getCurrentDate())) {
             throw new TokenNotFoundException(ErrorMessage.TOKEN_NOT_FOUND);

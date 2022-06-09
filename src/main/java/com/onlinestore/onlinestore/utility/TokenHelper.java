@@ -9,14 +9,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class TokenHelper {
-    private static final String SECRET_KEY = "secret";
+    private static final String SECRET_KEY = "secret.key";
     private static final String CLAIMS_NAME = "roles";
 
     public static Algorithm getToken() {
-        return Algorithm.HMAC256(SECRET_KEY.getBytes());
+        Properties properties = new Properties();
+        return Algorithm.HMAC256(properties.getProperty(SECRET_KEY).getBytes());
     }
 
     public static String getAccessToken(User user, HttpServletRequest request) {

@@ -1,4 +1,4 @@
-package com.onlinestore.onlinestore.repository;
+package com.onlinestore.onlinestore.dao;
 
 import com.onlinestore.onlinestore.entity.Product;
 import com.onlinestore.onlinestore.entity.ProductImages;
@@ -15,18 +15,18 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @DataJpaTest
-class ProductImagesRepositoryTest {
+class ProductImagesDAOTest {
     @Autowired
-    private ProductImagesRepository productImagesRepository;
+    private ProductImagesDAO productImagesDAO;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductDAO productDAO;
 
     private ProductImages product;
 
     @AfterEach
     void tearDown() {
-        productImagesRepository.deleteAll();
+        productImagesDAO.deleteAll();
     }
 
     @BeforeEach
@@ -38,13 +38,13 @@ class ProductImagesRepositoryTest {
     void itShouldFindProductByProductId() {
         // given
         Product productEntity = new Product();
-        productRepository.save(productEntity);
+        productDAO.save(productEntity);
         product.setProduct(productEntity);
-        productImagesRepository.save(product);
+        productImagesDAO.save(product);
         List<ProductImages> expected = new ArrayList<>(Arrays.asList(product));
 
         // when
-        List<ProductImages> actual = productImagesRepository.findByProductId(productEntity.getId());
+        List<ProductImages> actual = productImagesDAO.findByProductId(productEntity.getId());
 
         // then
         assertEquals(expected.get(0).getId(),actual.get(0).getId());

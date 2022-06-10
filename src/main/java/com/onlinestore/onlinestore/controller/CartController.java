@@ -23,7 +23,7 @@ public class CartController {
     private final CartService cartService;
 
     @PostMapping(value = "/add-product")
-    public ResponseEntity addProductToCart(@RequestBody ProductAddToCartDto productAddToCartDto) {
+    public ResponseEntity addProductToCart(ProductAddToCartDto productAddToCartDto) {
         try {
             Long count = cartService.addProductToCart(productAddToCartDto);
 
@@ -31,22 +31,10 @@ public class CartController {
                     new CountDto(count),
                     HttpStatus.OK
             );
-        } catch (UserNotFoundException e) {
+        } catch (UserNotFoundException | ProductNotFoundException | ProductAlreadyInCartException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.USER_NOT_FOUND),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (ProductNotFoundException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (ProductAlreadyInCartException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_ALREADY_IN_CART),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -59,7 +47,7 @@ public class CartController {
     }
 
     @PostMapping(value = "/get-products")
-    public ResponseEntity getCartProductsPage(@RequestBody UserIdPageNumberDto user) {
+    public ResponseEntity getCartProductsPage(UserIdPageNumberDto user) {
         try {
 
             return new ResponseEntity(
@@ -69,7 +57,7 @@ public class CartController {
         } catch (CartIsEmptyException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.CART_IS_EMPTY),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -82,7 +70,7 @@ public class CartController {
     }
 
     @DeleteMapping(value = "/delete-product")
-    public ResponseEntity deleteProductFromCart(@RequestBody ProductDeleteFromCart productDeleteFromCart) {
+    public ResponseEntity deleteProductFromCart(ProductDeleteFromCart productDeleteFromCart) {
         try {
             Long count = cartService.deleteProductFromCart(productDeleteFromCart);
 
@@ -93,7 +81,7 @@ public class CartController {
         } catch (ProductNotInCartException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_IN_CART),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -106,7 +94,7 @@ public class CartController {
     }
 
     @PostMapping(value = "/clear-cart")
-    public ResponseEntity clearCart(@RequestBody UserCartClearDto userCartClearDto) {
+    public ResponseEntity clearCart(UserCartClearDto userCartClearDto) {
         try {
             cartService.clearCart(userCartClearDto);
 
@@ -117,7 +105,7 @@ public class CartController {
         } catch (CartIsEmptyException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.CART_IS_EMPTY),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {

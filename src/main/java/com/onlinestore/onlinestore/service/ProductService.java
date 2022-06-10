@@ -53,11 +53,11 @@ public class ProductService {
                 .map(productsImage -> productsImage.getImage())
                 .collect(Collectors.
                         collectingAndThen(Collectors.toList(), result -> {
-                            if (result.isEmpty()) {
+                            if (result.isEmpty())
                                 throw new ProductNotFoundException(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND);
-                            }
                             return result;
-                        }));
+                        })
+                );
 
         List<ProductsTagDto> productsTags = productTagsDAO
                 .findByProductId(id)
@@ -65,11 +65,11 @@ public class ProductService {
                 .map(productTag -> new ProductsTagDto(productTag.getType(), productTag.getValue()))
                 .collect(Collectors
                         .collectingAndThen(Collectors.toList(), result -> {
-                            if (result.isEmpty()) {
+                            if (result.isEmpty())
                                 throw new ProductNotFoundException(ErrorMessage.PRODUCT_IMAGES_NOT_FOUND);
-                            }
                             return result;
-                        }));
+                        })
+                );
 
         return new FullProductDto(
                 id,

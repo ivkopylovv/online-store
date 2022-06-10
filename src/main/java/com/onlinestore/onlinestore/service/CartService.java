@@ -47,7 +47,8 @@ public class CartService {
     }
 
     public List<ProductInfoDto> getCartProductsPage(UserIdPageNumberDto userIdPageNumberDto) {
-        List<Long> productIds = cartDAO
+
+        return cartDAO
                 .findAllByCartIdUserId(
                         userIdPageNumberDto.getUserId(),
                         PageRequest.of(
@@ -56,25 +57,20 @@ public class CartService {
                 .stream()
                 .map(Cart::getCartId)
                 .map(CartId::getProductId)
-                .collect(Collectors
-                        .collectingAndThen(Collectors.toList(), result -> {
-                            if (result.isEmpty()) {
-                                throw new CartIsEmptyException(ErrorMessage.CART_IS_EMPTY);
-                            }
-                            return result;
-                        }));
-
-        List<ProductInfoDto> products = productIds
-                .stream()
                 .map(productId -> productDAO.findById(productId).get())
                 .map(product -> new ProductInfoDto(
                         product.getId(),
                         product.getName(),
                         product.getPrice(),
                         product.getImage()))
-                .collect(Collectors.toList());
-
-        return products;
+                .collect(Collectors
+                        .collectingAndThen(Collectors.toList(), result -> {
+                            if (result.isEmpty()) {
+                                throw new CartIsEmptyException(ErrorMessage.CART_IS_EMPTY);
+                            }
+                            return result;
+                        })
+                );
     }
 
     public Long deleteProductFromCart(ProductDeleteFromCart product) {
@@ -91,20 +87,15 @@ public class CartService {
     }
 
     public void clearCart(UserCartClearDto userCartClearDto) {
-        List<Cart> cartEntities = cartDAO
+        cartDAO
                 .findByCartIdUserId(userCartClearDto.getUserId())
                 .stream()
-                .collect(Collectors.
-                        collectingAndThen(Collectors.toList(), result -> {
-                            if (result.isEmpty()) {
+                .collect(Collectors
+                        .collectingAndThen(Collectors.toList(), result -> {
+                            if (result.isEmpty())
                                 throw new CartIsEmptyException(ErrorMessage.CART_IS_EMPTY);
-                            }
                             return result;
-                        })
-                );
-
-        cartEntities
-                .stream()
+                        }))
                 .forEach(cartEntity ->
                         cartDAO.delete(cartEntity)
                 );

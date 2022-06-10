@@ -76,5 +76,4 @@ public class TokenHelper {
         return authorizationHeader != null && authorizationHeader.startsWith("Bearer ");
     }
 
-
 }

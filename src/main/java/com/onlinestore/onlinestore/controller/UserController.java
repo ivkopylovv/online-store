@@ -39,7 +39,7 @@ public class UserController {
         } catch (UserAlreadyExistException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.USER_EXISTS),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -74,8 +74,8 @@ public class UserController {
         } catch (UserNotFoundException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.USER_NOT_FOUND),
-                    HttpStatus.INTERNAL_SERVER_ERROR
+                    new ErrorMessageDto(e.getMessage()),
+                    HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
 

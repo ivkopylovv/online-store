@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +24,7 @@ public class FavouritesController {
     private final FavouritesService favouritesService;
 
     @PostMapping(value = "/add-product")
-    public ResponseEntity addProductToFavourites(@RequestBody ProductAddToFavouritesDto productAddToBasketDto) {
+    public ResponseEntity addProductToFavourites(ProductAddToFavouritesDto productAddToBasketDto) {
         try {
             favouritesService.addProductToFavourites(productAddToBasketDto);
 
@@ -33,22 +32,10 @@ public class FavouritesController {
                     new SuccessMessageDto(SuccessMessage.PRODUCT_ADDED),
                     HttpStatus.OK
             );
-        } catch (UserNotFoundException e) {
+        } catch (UserNotFoundException | ProductNotFoundException | ProductAlreadyInFavouritesException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.USER_NOT_FOUND),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (ProductNotFoundException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_FOUND),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (ProductAlreadyInFavouritesException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_ALREADY_IN_FAVOURITES),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -61,7 +48,7 @@ public class FavouritesController {
     }
 
     @PostMapping(value = "/get-products")
-    public ResponseEntity getFavouritesProductsPage(@RequestBody UserIdPageNumberDto user) {
+    public ResponseEntity getFavouritesProductsPage(UserIdPageNumberDto user) {
         try {
 
             return new ResponseEntity(
@@ -71,7 +58,7 @@ public class FavouritesController {
         } catch (FavouritesIsEmptyException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.FAVOURITES_IS_EMPTY),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -84,7 +71,7 @@ public class FavouritesController {
     }
 
     @PostMapping(value = "/get-products-id")
-    public ResponseEntity getFavouritesProductsIdPage(@RequestBody UserIdPageNumberDto user) {
+    public ResponseEntity getFavouritesProductsIdPage(UserIdPageNumberDto user) {
         try {
 
             return new ResponseEntity(
@@ -94,7 +81,7 @@ public class FavouritesController {
         } catch (FavouritesIsEmptyException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.FAVOURITES_IS_EMPTY),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -108,7 +95,7 @@ public class FavouritesController {
 
 
     @PostMapping(value = "/delete-product")
-    public ResponseEntity deleteProductFromFavourites(@RequestBody ProductDeleteFromFavouritesDto productDto) {
+    public ResponseEntity deleteProductFromFavourites(ProductDeleteFromFavouritesDto productDto) {
         try {
             favouritesService.deleteProductFromFavourites(productDto);
 
@@ -119,7 +106,7 @@ public class FavouritesController {
         } catch (ProductNotInFavouritesException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.PRODUCT_NOT_IN_FAVOURITES),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {
@@ -132,7 +119,7 @@ public class FavouritesController {
     }
 
     @PostMapping(value = "/clear-favourites")
-    public ResponseEntity clearFavourites(@RequestBody UserFavouritesClearDto userFavouritesClearDto) {
+    public ResponseEntity clearFavourites(UserFavouritesClearDto userFavouritesClearDto) {
         try {
             favouritesService.clearFavourites(userFavouritesClearDto);
 
@@ -143,7 +130,7 @@ public class FavouritesController {
         } catch (FavouritesIsEmptyException e) {
 
             return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.FAVOURITES_IS_EMPTY),
+                    new ErrorMessageDto(e.getMessage()),
                     HttpStatus.BAD_REQUEST
             );
         } catch (RuntimeException e) {

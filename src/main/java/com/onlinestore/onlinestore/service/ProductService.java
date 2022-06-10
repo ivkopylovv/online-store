@@ -5,11 +5,13 @@ import com.onlinestore.onlinestore.constants.ProductOption;
 import com.onlinestore.onlinestore.dao.ProductDAO;
 import com.onlinestore.onlinestore.dao.ProductImagesDAO;
 import com.onlinestore.onlinestore.dao.ProductTagsDAO;
-import com.onlinestore.onlinestore.dto.request.ProductAllFieldsDto;
-import com.onlinestore.onlinestore.dto.response.FullProductDto;
+import com.onlinestore.onlinestore.dto.request.ProductFullInfoAddUpdateDto;
+import com.onlinestore.onlinestore.dto.response.ProductFullInfoDto;
 import com.onlinestore.onlinestore.dto.response.ProductInfoDto;
 import com.onlinestore.onlinestore.dto.response.ProductsTagDto;
 import com.onlinestore.onlinestore.entity.Product;
+import com.onlinestore.onlinestore.entity.ProductImages;
+import com.onlinestore.onlinestore.entity.ProductTags;
 import com.onlinestore.onlinestore.exception.ProductAlreadyExistException;
 import com.onlinestore.onlinestore.exception.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class ProductService {
     private final ProductImagesDAO productImagesDAO;
     private final ProductTagsDAO productTagsDAO;
 
-    public void addProduct(ProductAllFieldsDto product) {
+    public void addProduct(ProductFullInfoAddUpdateDto product) {
         productDAO.findByName(product.getName())
                 .ifPresent(result -> {
                     throw new ProductAlreadyExistException(ErrorMessage.PRODUCT_ALREADY_EXIST);
@@ -40,10 +42,29 @@ public class ProductService {
                 product.getImage(),
                 product.getPrice()
         );
+
         productDAO.save(newProduct);
+        Long newProductId =  productDAO
+                .findByName(product.getName()).get().getId();
+
+        product.getTags()
+                .forEach(productsTag ->
+                        productTagsDAO.save(new ProductTags(
+                                newProductId,
+                                productsTag.getType(),
+                                productsTag.getValue())
+                        )
+                );
+        product.getImages()
+                .forEach(productImage ->
+                        productImagesDAO.save(new ProductImages(
+                                newProductId,
+                                productImage)
+                        )
+                );
     }
 
-    public FullProductDto getProduct(long id) {
+    public ProductFullInfoDto getProduct(Long id) {
         Optional<Product> product = Optional.ofNullable(productDAO.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND)));
 
@@ -71,7 +92,7 @@ public class ProductService {
                         })
                 );
 
-        return new FullProductDto(
+        return new ProductFullInfoDto(
                 id,
                 product.get().getName(),
                 product.get().getDescription(),
@@ -81,11 +102,14 @@ public class ProductService {
         );
     }
 
-    public void deleteProduct(long id) {
-        Optional<Product> product = Optional.ofNullable(productDAO.findById(id)
+    public void deleteProduct(String name) {
+        Optional<Product> product = Optional.ofNullable(productDAO.findByName(name)
                 .orElseThrow(() -> new ProductNotFoundException(ErrorMessage.PRODUCT_NOT_FOUND)));
 
-        productDAO.delete(product.get());
+        Long id = product.get().getId();
+        productDAO.deleteById(id);
+        productImagesDAO.deleteById(id);
+        productTagsDAO.deleteById(id);
     }
 
     public List<ProductInfoDto> getPageProducts(int page) {
@@ -125,19 +149,17 @@ public class ProductService {
         return productDAO.countByNameStartingWith(name) / ProductOption.PAGE_COUNT;
     }
 
-    public void updateProductById(ProductAllFieldsDto product) {
-        productDAO
+    public void updateProductById(ProductFullInfoAddUpdateDto product) {
+        Product updatedProduct = productDAO
                 .findByName(product.getName())
-                .ifPresent(result -> {
-                    throw new ProductAlreadyExistException(ErrorMessage.PRODUCT_WITH_NAME_ALREADY_EXIST);
-                });
+                .orElseThrow(() -> new ProductAlreadyExistException(ErrorMessage.PRODUCT_NOT_FOUND));
 
         productDAO
                 .updateNameAndDescriptionAndPriceById(
                         product.getName(),
                         product.getDescription(),
                         product.getPrice(),
-                        product.getId()
+                        updatedProduct.getId()
                 );
     }
 }

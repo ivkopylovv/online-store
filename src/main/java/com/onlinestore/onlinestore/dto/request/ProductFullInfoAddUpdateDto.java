@@ -1,5 +1,6 @@
-package com.onlinestore.onlinestore.dto.response;
+package com.onlinestore.onlinestore.dto.request;
 
+import com.onlinestore.onlinestore.dto.response.ProductsTagDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,12 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class FullProductDto {
-    private Long id;
+public class ProductFullInfoAddUpdateDto {
     private String name;
     private String description;
+    private String image;
     private Double price;
     private List<String> images;
     private List<ProductsTagDto> tags;
-
 }

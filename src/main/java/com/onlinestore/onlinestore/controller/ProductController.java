@@ -2,7 +2,7 @@ package com.onlinestore.onlinestore.controller;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.SuccessMessage;
-import com.onlinestore.onlinestore.dto.request.ProductAllFieldsDto;
+import com.onlinestore.onlinestore.dto.request.ProductFullInfoAddUpdateDto;
 import com.onlinestore.onlinestore.dto.response.CountDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
 import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
@@ -24,7 +24,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping(value = "/add-product")
-    public ResponseEntity addProduct(ProductAllFieldsDto product) {
+    public ResponseEntity addProduct(ProductFullInfoAddUpdateDto product) {
         try {
             productService.addProduct(product);
 
@@ -48,7 +48,7 @@ public class ProductController {
     }
 
     @PatchMapping(value = "/update-product")
-    public ResponseEntity updateProduct(ProductAllFieldsDto product) {
+    public ResponseEntity updateProduct(ProductFullInfoAddUpdateDto product) {
         try {
             productService.updateProductById(product);
 
@@ -71,10 +71,10 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping(value = "/delete-product", params = {"id"})
-    public ResponseEntity deleteProduct(Long id) {
+    @DeleteMapping(value = "/delete-product", params = {"name"})
+    public ResponseEntity deleteProduct(String name) {
         try {
-            productService.deleteProduct(id);
+            productService.deleteProduct(name);
 
             return new ResponseEntity(
                     new SuccessMessageDto(SuccessMessage.PRODUCT_DELETED),

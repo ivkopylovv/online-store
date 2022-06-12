@@ -36,5 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-/src/main/resources/SQL_Tools/
-/src/main/resources/static/images/
+/src/main/resources/secret.properties

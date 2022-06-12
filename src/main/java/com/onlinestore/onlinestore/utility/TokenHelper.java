@@ -4,20 +4,35 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.onlinestore.onlinestore.OnlineStoreApplication;
 import com.onlinestore.onlinestore.entity.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.stream.Collectors;
+
 
 public class TokenHelper {
     private static final String SECRET_KEY = "secret.key";
     private static final String CLAIMS_NAME = "roles";
+    private static final String PROPERTIES = "secret.properties";
 
     public static Algorithm getToken() {
         Properties properties = new Properties();
+
+        try {
+            properties
+                    .load(OnlineStoreApplication.class
+                            .getClassLoader()
+                            .getResourceAsStream(PROPERTIES)
+                    );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return Algorithm.HMAC256(properties.getProperty(SECRET_KEY).getBytes());
     }
 

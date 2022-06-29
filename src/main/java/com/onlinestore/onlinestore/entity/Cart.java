@@ -1,13 +1,15 @@
 package com.onlinestore.onlinestore.entity;
 
-import com.onlinestore.onlinestore.embeddable.CartId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import static javax.persistence.FetchType.EAGER;
 
 @Entity
 @NoArgsConstructor
@@ -15,6 +17,11 @@ import javax.persistence.Entity;
 @Getter
 @Setter
 public class Cart {
-    @EmbeddedId
-    private CartId cartId;
+    @Id
+    @ManyToOne(fetch = EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToMany(fetch = EAGER)
+    private Set<Product> products = new HashSet<>();
 }

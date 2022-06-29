@@ -1,20 +1,15 @@
 package com.onlinestore.onlinestore.dao;
 
-import com.onlinestore.onlinestore.embeddable.CartId;
 import com.onlinestore.onlinestore.entity.Cart;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
+import com.onlinestore.onlinestore.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface CartDAO extends CrudRepository<Cart, Long> {
-    boolean existsByCartId(CartId cartId);
+public interface CartDAO extends JpaRepository<Cart, User> {
+    Optional<Cart> findByUserUsername(String username);
 
-    List<Cart> findAllByCartIdUserId(Long id, Pageable pageable);
-
-    List<Cart> findByCartIdUserId(Long id);
-
-    Long countByCartIdUserId(Long id);
+    void deleteByUserUsername(String username);
 }

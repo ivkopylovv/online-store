@@ -2,7 +2,6 @@ package com.onlinestore.onlinestore.config;
 
 import com.onlinestore.onlinestore.filter.AuthenticationFilter;
 import com.onlinestore.onlinestore.filter.AuthorizationFilter;
-import com.onlinestore.onlinestore.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

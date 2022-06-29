@@ -1,119 +1,50 @@
 package com.onlinestore.onlinestore.controller;
 
-import com.onlinestore.onlinestore.constants.ErrorMessage;
 import com.onlinestore.onlinestore.constants.SuccessMessage;
-import com.onlinestore.onlinestore.dto.request.ProductAddToCartDto;
-import com.onlinestore.onlinestore.dto.request.ProductDeleteFromCart;
-import com.onlinestore.onlinestore.dto.request.UserCartClearDto;
-import com.onlinestore.onlinestore.dto.request.UserIdPageNumberDto;
-import com.onlinestore.onlinestore.dto.response.CountDto;
-import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
-import com.onlinestore.onlinestore.dto.response.SuccessMessageDto;
-import com.onlinestore.onlinestore.exception.*;
+import com.onlinestore.onlinestore.dto.request.ModifyCartDTO;
+import com.onlinestore.onlinestore.dto.request.ProductDTO;
+import com.onlinestore.onlinestore.dto.response.ProductListDTO;
+import com.onlinestore.onlinestore.dto.response.SuccessMessageDTO;
 import com.onlinestore.onlinestore.service.CartService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("api/cart")
+@RequestMapping("api/v1")
 @RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
 
-    @PostMapping(value = "/add-product")
-    public ResponseEntity addProductToCart(ProductAddToCartDto productAddToCartDto) {
-        try {
-            Long count = cartService.addProductToCart(productAddToCartDto);
+    @GetMapping("/cart/{username}")
+    public ResponseEntity getProducts(@PathVariable("username") String username) {
+        List<ProductDTO> products = cartService.getCartProducts(username);
 
-            return new ResponseEntity(
-                    new CountDto(count),
-                    HttpStatus.OK
-            );
-        } catch (UserNotFoundException | ProductNotFoundException | ProductAlreadyInCartException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(e.getMessage()),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (RuntimeException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        return ResponseEntity.ok().body(new ProductListDTO(products));
     }
 
-    @PostMapping(value = "/get-products")
-    public ResponseEntity getCartProductsPage(UserIdPageNumberDto user) {
-        try {
+    @PostMapping("/cart")
+    public ResponseEntity addProductToCart(@RequestBody ModifyCartDTO modifyCartDTO) {
+        cartService.addProductToCart(modifyCartDTO.getUsername(), modifyCartDTO.getProductId());
 
-            return new ResponseEntity(
-                    cartService.getCartProductsPage(user),
-                    HttpStatus.OK
-            );
-        } catch (CartIsEmptyException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(e.getMessage()),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (RuntimeException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        return ResponseEntity.ok().body(new SuccessMessageDTO(SuccessMessage.PRODUCT_ADDED));
     }
 
-    @DeleteMapping(value = "/delete-product")
-    public ResponseEntity deleteProductFromCart(ProductDeleteFromCart productDeleteFromCart) {
-        try {
-            Long count = cartService.deleteProductFromCart(productDeleteFromCart);
+    @DeleteMapping(value = "/cart/", params = {"username", "id"})
+    public ResponseEntity deleteProductFromCart(
+            @RequestParam("username") String username,
+            @RequestParam("id") Long productId) {
+        cartService.deleteProductFromCart(username, productId);
 
-            return new ResponseEntity(
-                    new CountDto(count),
-                    HttpStatus.OK
-            );
-        } catch (ProductNotInCartException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(e.getMessage()),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (RuntimeException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        return ResponseEntity.ok().body(new SuccessMessageDTO(SuccessMessage.PRODUCT_DELETED));
     }
 
-    @PostMapping(value = "/clear-cart")
-    public ResponseEntity clearCart(UserCartClearDto userCartClearDto) {
-        try {
-            cartService.clearCart(userCartClearDto);
+    @DeleteMapping(value = "/cart/{username}")
+    public ResponseEntity clearCart(@PathVariable("username") String username) {
+        cartService.clearCart(username);
 
-            return new ResponseEntity(
-                    new SuccessMessageDto(SuccessMessage.CART_IS_EMPTIED),
-                    HttpStatus.OK
-            );
-        } catch (CartIsEmptyException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(e.getMessage()),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (RuntimeException e) {
-
-            return new ResponseEntity(
-                    new ErrorMessageDto(ErrorMessage.INTERNAL_SERVER_ERROR),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        return ResponseEntity.ok().body(new SuccessMessageDTO(SuccessMessage.CART_IS_EMPTIED));
     }
 }

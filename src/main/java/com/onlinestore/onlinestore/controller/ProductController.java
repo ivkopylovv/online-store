@@ -30,6 +30,7 @@ public class ProductController {
     @GetMapping(value = "/products",  params = {"page"})
     public ResponseEntity getProducts(@RequestParam("page") int page) {
         List<ProductDTO> products = productService.getProducts(page);
+
         return ResponseEntity.ok().body(new ProductListDTO(products));
     }
 

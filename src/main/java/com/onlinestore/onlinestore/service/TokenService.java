@@ -1,9 +1,7 @@
 package com.onlinestore.onlinestore.service;
 
 import com.onlinestore.onlinestore.constants.ErrorMessage;
-import com.onlinestore.onlinestore.dao.TokenDAO;
 import com.onlinestore.onlinestore.dao.UserDAO;
-import com.onlinestore.onlinestore.entity.Token;
 import com.onlinestore.onlinestore.entity.User;
 import com.onlinestore.onlinestore.utility.DateHelper;
 import lombok.RequiredArgsConstructor;

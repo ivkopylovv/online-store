@@ -2,7 +2,6 @@ package com.onlinestore.onlinestore.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlinestore.onlinestore.constants.ErrorMessage;
-import com.onlinestore.onlinestore.dao.TokenDAO;
 import com.onlinestore.onlinestore.dao.UserDAO;
 import com.onlinestore.onlinestore.dto.request.UserRegistrationDto;
 import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;

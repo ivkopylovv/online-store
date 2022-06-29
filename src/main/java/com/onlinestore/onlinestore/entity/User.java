@@ -30,20 +30,8 @@ public class User {
     @GeneratedValue(strategy = AUTO)
     private Long id;
     private String username;
-    private String login;
     private String password;
 
     @ManyToMany(fetch = EAGER)
     private Collection<Role> roles = new ArrayList<>();
-
-    @OneToOne(fetch = EAGER)
-    @JoinColumn(name = "token_id")
-    private Token token;
-
-    public User(String username, String login, String password) {
-        this.username = username;
-        this.login = login;
-        this.password = password;
-    }
-
 }

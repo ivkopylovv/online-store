@@ -20,15 +20,4 @@ public class ProductTags {
     private Long id;
     private String type;
     private String value;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
-
-    public ProductTags(Long id, String type, String value) {
-        this.id = id;
-        this.type = type;
-        this.value = value;
-    }
-
 }

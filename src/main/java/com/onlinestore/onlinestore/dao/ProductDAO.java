@@ -2,25 +2,12 @@ package com.onlinestore.onlinestore.dao;
 
 import com.onlinestore.onlinestore.entity.Product;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface ProductDAO extends CrudRepository<Product, Long> {
-    Optional<Product> findByName(String name);
-
-    List<Product> findByOrderById(Pageable pageable);
-
-    List<Product> getByNameStartingWith(String name, Pageable pageable);
-
-    Long countByNameStartingWith(String name);
-
-    @Modifying
-    @Query("update Product p set p.name = ?1, p.description = ?2, p.price = ?3 where p.id = ?4")
-    void updateNameAndDescriptionAndPriceById(String name, String description, Double price, Long id);
+public interface ProductDAO extends JpaRepository<Product, Long> {
+    List<Product> findByTitleContaining(String title, Pageable pageable);
 }

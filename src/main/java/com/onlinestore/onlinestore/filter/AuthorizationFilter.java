@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
+import com.onlinestore.onlinestore.dto.response.ErrorMessageDTO;
 import com.onlinestore.onlinestore.utility.TokenHelper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -62,7 +62,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 } catch (Exception e) {
                     response.setStatus(FORBIDDEN.value());
                     response.setContentType(APPLICATION_JSON_VALUE);
-                    new ObjectMapper().writeValue(response.getOutputStream(), new ErrorMessageDto(e.getMessage()));
+                    new ObjectMapper().writeValue(response.getOutputStream(), new ErrorMessageDTO(e.getMessage()));
                 }
             } else {
                 filterChain.doFilter(request, response);

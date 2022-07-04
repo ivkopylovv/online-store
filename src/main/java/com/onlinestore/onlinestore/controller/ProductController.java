@@ -27,14 +27,14 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-    @GetMapping(value = "/products",  params = {"page"})
+    @GetMapping(value = "/products", params = {"page"})
     public ResponseEntity getProducts(@RequestParam("page") int page) {
         List<ProductDTO> products = productService.getProducts(page);
 
         return ResponseEntity.ok().body(new ProductListDTO(products));
     }
 
-    @GetMapping(value = "/products",  params = {"page, asc, attribute"})
+    @GetMapping(value = "/products", params = {"page, asc, attribute"})
     public ResponseEntity getSortedProducts(
             @RequestParam("page") int page,
             @RequestParam("asc") boolean asc,
@@ -44,7 +44,7 @@ public class ProductController {
         return ResponseEntity.ok().body(new ProductListDTO(products));
     }
 
-    @GetMapping(value = "/products",  params = {"page, title"})
+    @GetMapping(value = "/products", params = {"page, title"})
     public ResponseEntity findProductsByTitle(
             @RequestParam("page") int page,
             @RequestParam("title") String title) {
@@ -53,7 +53,7 @@ public class ProductController {
         return ResponseEntity.ok().body(new ProductListDTO(products));
     }
 
-    @GetMapping(value = "/products",  params = {"page, asc, attribute, title"})
+    @GetMapping(value = "/products", params = {"page, asc, attribute, title"})
     public ResponseEntity findSortedProductsByTitle(
             @RequestParam("page") int page,
             @RequestParam("asc") boolean asc,

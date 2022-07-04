@@ -4,14 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -21,6 +16,7 @@ import static javax.persistence.GenerationType.AUTO;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 @Getter
 @Setter
 @Table(name = "\"user\"")

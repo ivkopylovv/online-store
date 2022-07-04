@@ -2,7 +2,8 @@ package com.onlinestore.onlinestore.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlinestore.onlinestore.constants.ErrorMessage;
-import com.onlinestore.onlinestore.dto.response.ErrorMessageDto;
+import com.onlinestore.onlinestore.dto.response.ErrorMessageDTO;
+import com.onlinestore.onlinestore.service.TokenService;
 import com.onlinestore.onlinestore.utility.TokenHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -44,7 +45,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         User user = (User) authentication.getPrincipal();
         String access_token = TokenHelper.getAccessToken(user, request);
         String refresh_token = TokenHelper.getRefreshToken(user, request);
-        tokenService.saveRefreshToken(user.getUsername(), refresh_token);
+        tokenService.saveToken(user.getUsername(), refresh_token);
 
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
@@ -58,7 +59,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         SecurityContextHolder.clearContext();
         response.setStatus(FORBIDDEN.value());
         response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), new ErrorMessageDto(ErrorMessage.LOGIN_OR_PASSWORD_INCORRECT));
+        new ObjectMapper().writeValue(response.getOutputStream(), new ErrorMessageDTO(ErrorMessage.LOGIN_OR_PASSWORD_INCORRECT));
     }
 
 
